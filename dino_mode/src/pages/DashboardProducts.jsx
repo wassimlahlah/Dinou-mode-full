@@ -7,31 +7,30 @@ import api from "../api/axios";
 import { useShop } from "../context/ShopContext";
 
 const AVAILABLE_COLORS = [
-    { name: "RED", hex: "#EF4444" },
-    { name: "BLUE", hex: "#3B82F6" },
-    { name: "GREEN", hex: "#22C55E" },
-    { name: "BLACK", hex: "#000000" },
-    { name: "WHITE", hex: "#F3F4F6" },
-    { name: "YELLOW", hex: "#EAB308" },
-    { name: "PINK", hex: "#EC4899" },
-    { name: "PURPLE", hex: "#A855F7" },
-    { name: "ORANGE", hex: "#F97316" },
-    { name: "GRAY", hex: "#6B7280" },
-    { name: "BROWN", hex: "#92400E" },
-    { name: "BEIGE", hex: "#D4C5B0" },
-    { name: "NAVY", hex: "#1E3A5F" },
-    { name: "BURGUNDY", hex: "#800020" },
-    { name: "TEAL", hex: "#008080" },
-    { name: "CREAM", hex: "#FFFDD0" },
-    { name: "GOLD", hex: "#FFD700" },
-    { name: "SILVER", hex: "#C0C0C0" },
-    { name: "KHAKI", hex: "#F0E68C" },
-    { name: "OLIVE", hex: "#808000" },
+    { name: "RED", hex: "#EF4444" }, { name: "BLUE", hex: "#3B82F6" },
+    { name: "GREEN", hex: "#22C55E" }, { name: "BLACK", hex: "#000000" },
+    { name: "WHITE", hex: "#F3F4F6" }, { name: "YELLOW", hex: "#EAB308" },
+    { name: "PINK", hex: "#EC4899" }, { name: "PURPLE", hex: "#A855F7" },
+    { name: "ORANGE", hex: "#F97316" }, { name: "GRAY", hex: "#6B7280" },
+    { name: "BROWN", hex: "#92400E" }, { name: "BEIGE", hex: "#D4C5B0" },
+    { name: "NAVY", hex: "#1E3A5F" }, { name: "BURGUNDY", hex: "#800020" },
+    { name: "TEAL", hex: "#008080" }, { name: "CREAM", hex: "#FFFDD0" },
+    { name: "GOLD", hex: "#FFD700" }, { name: "SILVER", hex: "#C0C0C0" },
+    { name: "KHAKI", hex: "#F0E68C" }, { name: "OLIVE", hex: "#808000" },
 ];
 
+const AVAILABLE_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "XXXXL"];
+
+// ← Backend ProductSerializer returns: id, name, price, oldPrice, productsInfo
+// ← NO "category" field! So we need to handle this.
 const adaptProduct = (p) => ({
-    ...p,
-    category: p.category ?? "",
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    oldPrice: p.oldPrice,
+    // ← Backend does NOT return category in ProductSerializer
+    // We can't get category from GET, so we'll store it as null/undefined
+    category: p.category ?? null,
     categoryName: p.category_name ?? "",
     colors: p.productsInfo?.map((info) => ({
         id: info.id,
@@ -40,7 +39,7 @@ const adaptProduct = (p) => ({
         sizes: info.sizesQte?.map((sq) => ({
             id: sq.id,
             label: sq.size,
-            number: null,
+            number: sq.eqSize ?? null,
             quantity: sq.qte,
         })) || [],
     })) || [],
@@ -50,12 +49,15 @@ export default function DashboardProducts() {
     const { categories } = useShop();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(null);
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [form, setForm] = useState({
         name: "",
@@ -82,6 +84,8 @@ export default function DashboardProducts() {
         quantity: "",
     });
 
+    const [pendingOperations, setPendingOperations] = useState([]);
+
     const colorFileRef = useRef(null);
 
     useEffect(() => {
@@ -90,29 +94,38 @@ export default function DashboardProducts() {
 
     const fetchProducts = async () => {
         setLoading(true);
+        setError(null);
         try {
             const prodRes = await api.get("/products_method/0/0/");
-            const prods = (prodRes.data.data || []).map(adaptProduct);
-            setProducts(prods);
+            if (prodRes.data?.status === "success") {
+                const prods = (prodRes.data.data || []).map(adaptProduct);
+                setProducts(prods);
+            } else {
+                throw new Error(prodRes.data?.message || "Invalid response");
+            }
         } catch (err) {
-            console.error(err);
-            toast.error("Failed to load products");
+            console.error("Fetch products error:", err);
+            setError(err.message || "Failed to load products");
+            toast.error(err.response?.data?.message || "Failed to load products");
         } finally {
             setLoading(false);
         }
     };
 
     const filtered = products.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase())
+        p.name?.toLowerCase().includes(search.toLowerCase())
     );
 
     const openAdd = () => {
         setEditing(null);
+        setPendingOperations([]);
+        setIsSubmitting(false);
+        const firstCatId = categories[0]?.id?.toString() || "";
         setForm({
             name: "",
             price: "",
             oldPrice: "",
-            category: categories[0]?.id?.toString() || "",
+            category: firstCatId,
             colors: [],
         });
         setShowModal(true);
@@ -120,113 +133,30 @@ export default function DashboardProducts() {
 
     const openEdit = (product) => {
         setEditing(product);
+        setPendingOperations([]);
+        setIsSubmitting(false);
+
+        // ← Backend ProductSerializer does NOT return "category"
+        // So product.category will be null/undefined
+        // We default to first category since we can't know the real one
+        let catId = product.category;
+
+        if (!catId) {
+            catId = categories[0]?.id?.toString() || "";
+        } else {
+            catId = catId.toString();
+        }
+
         setForm({
             name: product.name,
             price: product.price,
             oldPrice: product.oldPrice || "",
-            category: product.category?.toString() || "",
+            category: catId,
             colors: product.colors || [],
         });
         setShowModal(true);
     };
 
-    // ========== SAVE PRODUCT (CREATE or UPDATE basics) ==========
-    const handleSave = async (e) => {
-        e.preventDefault();
-        if (!form.name || !form.price || !form.category) {
-            toast.error("Please fill all fields");
-            return;
-        }
-        if (form.colors.length === 0) {
-            toast.error("Please add at least one color");
-            return;
-        }
-
-        try {
-            if (editing) {
-                // 1. Update product basics
-                await api.put(`/products_method/0/${editing.id}/`, {
-                    name: form.name,
-                    price: Number(form.price),
-                    oldPrice: form.oldPrice ? Number(form.oldPrice) : null,
-                    category: Number(form.category),
-                });
-
-                // 2. Update colors (image + color name)
-                for (const color of form.colors) {
-                    if (color.id) {
-                        // Existing color - update via update_color_image
-                        const formData = new FormData();
-                        if (color.imageFile instanceof File) {
-                            formData.append("image", color.imageFile);
-                        }
-                        await api.put(
-                            `/update_coor_image/${color.id}/${color.color}/`,
-                            formData
-                        );
-                    }
-                    // New colors: Backend مافيهاش create color فـ API منفصل!
-                    // خاصك تزيد endpoint جديد فـ Backend
-                }
-
-                // 3. Update sizes quantities
-                for (const color of form.colors) {
-                    for (const size of color.sizes) {
-                        if (size.id) {
-                            // Calculate quantity difference
-                            const originalColor = editing.colors.find(c => c.id === color.id);
-                            const originalSize = originalColor?.sizes.find(s => s.id === size.id);
-                            const oldQty = originalSize?.quantity || 0;
-                            const diff = size.quantity - oldQty;
-                            
-                            if (diff !== 0) {
-                                await api.put(`/update_qte/${size.id}/${diff}/`);
-                            }
-                        }
-                        // New sizes: Backend مافيهاش create size فـ API منفصل!
-                    }
-                }
-
-                toast.success("Product updated");
-            } else {
-                // CREATE - مابقاتش تبدلت
-                const formData = new FormData();
-                const jsonData = {
-                    name: form.name,
-                    price: Number(form.price),
-                    oldPrice: form.oldPrice ? Number(form.oldPrice) : 0,
-                    category: Number(form.category),
-                    productsInfo: form.colors.map((c) => ({
-                        color: c.color,
-                        image: "https://placeholder.com/1x1.png",
-                        sizesQte: c.sizes.map((s) => ({
-                            size: s.label,
-                            qte: Number(s.quantity),
-                        })),
-                    })),
-                };
-                formData.append("json", JSON.stringify(jsonData));
-
-                form.colors.forEach((c) => {
-                    if (c.imageFile instanceof File) {
-                        formData.append(c.color, c.imageFile);
-                    }
-                });
-
-                await api.post("/products_method/0/0/", formData);
-                toast.success("Product added");
-            }
-
-            setShowModal(false);
-            fetchProducts();
-        } catch (err) {
-            console.error(err);
-            const msg = err.response?.data?.message || err.response?.data?.error || "Something went wrong";
-            toast.error(msg);
-        }
-    };
-
-    // ========== DELETE ==========
     const openDeleteModal = (product) => {
         setDeleteTarget(product);
         setShowDeleteModal(true);
@@ -235,12 +165,13 @@ export default function DashboardProducts() {
     const confirmDelete = async () => {
         if (!deleteTarget) return;
         try {
+            // ← FIX: Use products_method (not category_method!)
             await api.delete(`/products_method/0/${deleteTarget.id}/`);
             toast.success("Product deleted");
             fetchProducts();
         } catch (err) {
             console.error(err);
-            toast.error("Failed to delete product");
+            toast.error(err.response?.data?.message || "Failed to delete product");
         } finally {
             setShowDeleteModal(false);
             setDeleteTarget(null);
@@ -250,6 +181,174 @@ export default function DashboardProducts() {
     const cancelDelete = () => {
         setShowDeleteModal(false);
         setDeleteTarget(null);
+    };
+
+    // ========== SAVE PRODUCT ==========
+    const handleSave = async (e) => {
+        e.preventDefault();
+
+        if (isSubmitting) return;
+
+        const cleanNumber = (val) => {
+            if (!val) return 0;
+            return parseFloat(val.toString().replace(/\s/g, "").replace(",", ".")) || 0;
+        };
+
+        const priceNum = cleanNumber(form.price);
+        const oldPriceNum = cleanNumber(form.oldPrice);
+        const categoryNum = form.category ? Number(form.category) : null;
+
+        if (!form.name || priceNum <= 0 || !form.category || form.category === "") {
+            toast.error("Please fill name, price and select a category");
+            return;
+        }
+
+        if (form.colors.length === 0) {
+            toast.error("Please add at least one color");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            if (editing) {
+                // ← PUT: Update product basic info
+                // Backend uses ProductSerializerUpdate with partial=True
+                // Fields: name, price, oldPrice, category
+                const payload = {
+                    name: form.name,
+                    price: priceNum,
+                    oldPrice: oldPriceNum || 0,
+                    category: categoryNum,
+                };
+
+                await api.put(`/products_method/0/${editing.id}/`, payload);
+
+                // Execute pending color/size operations
+                for (const op of pendingOperations) {
+                    await executePendingOperation(op, editing.id);
+                }
+
+                toast.success("Product updated");
+            } else {
+                // ← POST: Create new product
+                // Backend ProductSerializerPush expects:
+                // { name, price, oldPrice, category, productsInfo: [{color, image, sizesQte: [{size, qte}]}] }
+                // Note: "image" is read_only - images uploaded separately via FILES
+                const formData = new FormData();
+
+                const productsInfo = form.colors.map((c) => ({
+                    color: c.color,
+                    sizesQte: c.sizes.map((s) => ({
+                        size: s.label,
+                        qte: s.quantity,
+                    })),
+                }));
+
+                const jsonPayload = {
+                    name: form.name,
+                    price: priceNum,
+                    oldPrice: oldPriceNum || 0,
+                    category: categoryNum,
+                    productsInfo: productsInfo,
+                };
+
+                formData.append("json", JSON.stringify(jsonPayload));
+
+                // Upload images separately - key = color name
+                form.colors.forEach((c) => {
+                    if (c.imageFile) {
+                        formData.append(c.color, c.imageFile);
+                    }
+                });
+
+                // URL: /products_method/<category_id>/<product_id>/
+                // For POST: category_id = actual category, product_id = 0
+                await api.post(`/products_method/${categoryNum}/0/`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                toast.success("Product added");
+            }
+            setShowModal(false);
+            setPendingOperations([]);
+            fetchProducts();
+        } catch (err) {
+            console.error("Save error:", err);
+            console.error("Response data:", err.response?.data);
+            const msg = err.response?.data?.message 
+                || err.response?.data?.error 
+                || (err.response?.data && JSON.stringify(err.response.data))
+                || "Something went wrong";
+            toast.error(msg);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const executePendingOperation = async (op, productId) => {
+        try {
+            if (op.type === "add_color") {
+                // POST /update_coor_image/0/0/<product_id>/
+                const formData = new FormData();
+                const jsonPayload = {
+                    info: [{
+                        color: op.data.color,
+                        sizesQte: op.data.sizes.map((s) => ({
+                            size: s.label,
+                            qte: s.quantity,
+                        })),
+                    }],
+                };
+                formData.append("json", JSON.stringify(jsonPayload));
+                if (op.data.imageFile) {
+                    formData.append(op.data.color, op.data.imageFile);
+                }
+                await api.post(`/update_coor_image/0/0/${productId}/`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+            } else if (op.type === "edit_color") {
+                // PUT /update_coor_image/<productColorImage_id>/<new_color>/0/
+                const formData = new FormData();
+                if (op.data.imageFile) {
+                    formData.append("image", op.data.imageFile);
+                }
+                await api.put(`/update_coor_image/${op.data.id}/${op.data.color}/0/`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+            } else if (op.type === "delete_color") {
+                // DELETE /update_coor_image/<productColorImage_id>/0/0/
+                await api.delete(`/update_coor_image/${op.data.id}/0/0/`);
+
+            } else if (op.type === "add_size") {
+                // POST /update_qte/0/<productColor_id>/
+                const payload = {
+                    info: op.data.sizes.map((s) => ({
+                        size: s.label,
+                        qte: s.quantity,
+                    })),
+                };
+                await api.post(`/update_qte/0/${op.data.colorId}/`, payload);
+
+            } else if (op.type === "edit_size") {
+                // PUT /update_qte/<product_size_id>/<productColor_id>/
+                const payload = {
+                    size: op.data.label,
+                    qte: op.data.quantity,
+                };
+                await api.put(`/update_qte/${op.data.id}/${op.data.colorId}/`, payload);
+
+            } else if (op.type === "delete_size") {
+                // DELETE /update_qte/<product_size_id>/<productColor_id>/
+                await api.delete(`/update_qte/${op.data.id}/${op.data.colorId}/`);
+            }
+        } catch (err) {
+            console.error(`Operation ${op.type} failed:`, err);
+            toast.error(`Failed to ${op.type.replace("_", " ")}`);
+            throw err;
+        }
     };
 
     // ========== COLOR MANAGEMENT ==========
@@ -276,18 +375,17 @@ export default function DashboardProducts() {
             toast.error("Color name is required");
             return;
         }
-        const hasImage = colorForm.image || colorForm.imageFile;
-        if (!hasImage) {
+        if (!colorForm.image && !colorForm.imageFile) {
             toast.error("Color image is required");
             return;
         }
         if (colorForm.sizes.length === 0) {
-            toast.error("Please add at least one size with quantity");
+            toast.error("Please add at least one size");
             return;
         }
 
-        const existingId = editingColorIndex !== null 
-            ? form.colors[editingColorIndex]?.id 
+        const existingId = editingColorIndex !== null
+            ? form.colors[editingColorIndex]?.id
             : null;
 
         const newColor = {
@@ -298,17 +396,98 @@ export default function DashboardProducts() {
             sizes: colorForm.sizes,
         };
 
-        if (editingColorIndex !== null) {
-            const updated = [...form.colors];
-            updated[editingColorIndex] = newColor;
-            setForm({ ...form, colors: updated });
+        if (editing) {
+            if (editingColorIndex !== null) {
+                const originalColor = form.colors[editingColorIndex];
+                const ops = [];
+
+                if (originalColor.color !== colorForm.color || colorForm.imageFile) {
+                    ops.push({
+                        type: "edit_color",
+                        data: {
+                            id: originalColor.id,
+                            color: colorForm.color,
+                            imageFile: colorForm.imageFile,
+                        },
+                    });
+                }
+
+                const originalSizes = originalColor.sizes || [];
+                const newSizes = colorForm.sizes;
+
+                originalSizes.forEach((origSize) => {
+                    if (!newSizes.find((s) => s.id === origSize.id)) {
+                        ops.push({
+                            type: "delete_size",
+                            data: {
+                                id: origSize.id,
+                                colorId: originalColor.id,
+                            },
+                        });
+                    }
+                });
+
+                newSizes.forEach((newSize) => {
+                    const origSize = originalSizes.find((s) => s.id === newSize.id);
+                    if (!origSize) {
+                        ops.push({
+                            type: "add_size",
+                            data: {
+                                colorId: originalColor.id,
+                                sizes: [newSize],
+                            },
+                        });
+                    } else if (
+                        origSize.label !== newSize.label ||
+                        origSize.quantity !== newSize.quantity
+                    ) {
+                        ops.push({
+                            type: "edit_size",
+                            data: {
+                                id: origSize.id,
+                                colorId: originalColor.id,
+                                label: newSize.label,
+                                quantity: newSize.quantity,
+                            },
+                        });
+                    }
+                });
+
+                setPendingOperations((prev) => [...prev, ...ops]);
+
+                const updated = [...form.colors];
+                updated[editingColorIndex] = newColor;
+                setForm({ ...form, colors: updated });
+            } else {
+                setPendingOperations((prev) => [
+                    ...prev,
+                    { type: "add_color", data: newColor },
+                ]);
+                setForm({ ...form, colors: [...form.colors, newColor] });
+            }
         } else {
-            setForm({ ...form, colors: [...form.colors, newColor] });
+            if (editingColorIndex !== null) {
+                const updated = [...form.colors];
+                updated[editingColorIndex] = newColor;
+                setForm({ ...form, colors: updated });
+            } else {
+                setForm({ ...form, colors: [...form.colors, newColor] });
+            }
         }
+
         setShowColorModal(false);
     };
 
     const deleteColor = (index) => {
+        const colorToDelete = form.colors[index];
+
+        if (editing && colorToDelete.id) {
+            setPendingOperations((prev) => [
+                ...prev,
+                { type: "delete_color", data: { id: colorToDelete.id } },
+            ]);
+        }
+
         setForm({ ...form, colors: form.colors.filter((_, i) => i !== index) });
     };
 
@@ -366,8 +545,8 @@ export default function DashboardProducts() {
             return;
         }
 
-        const existingId = editingSizeIndex !== null 
-            ? colorForm.sizes[editingSizeIndex]?.id 
+        const existingId = editingSizeIndex !== null
+            ? colorForm.sizes[editingSizeIndex]?.id
             : null;
 
         const newSize = {
@@ -400,7 +579,7 @@ export default function DashboardProducts() {
 
     const getCategoryName = (catId) => {
         const cat = categories.find((c) => c.id === Number(catId) || c.id === catId);
-        return cat?.name || catId;
+        return cat?.name || catId || "No Category";
     };
 
     if (loading) {
@@ -409,6 +588,26 @@ export default function DashboardProducts() {
                 <DashboardSidebar />
                 <main className="flex-1 p-10 flex items-center justify-center">
                     <p className="text-gray-500 text-lg">Loading...</p>
+                </main>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex min-h-screen bg-pink-50">
+                <DashboardSidebar />
+                <main className="flex-1 p-10 flex items-center justify-center">
+                    <div className="text-center">
+                        <FaExclamationTriangle className="text-red-400 text-5xl mx-auto mb-4" />
+                        <p className="text-gray-600 text-lg mb-4">{error}</p>
+                        <button
+                            onClick={fetchProducts}
+                            className="bg-black text-white px-6 py-3 rounded-full hover:bg-pink-500 transition"
+                        >
+                            Retry
+                        </button>
+                    </div>
                 </main>
             </div>
         );
@@ -445,6 +644,7 @@ export default function DashboardProducts() {
                             <thead>
                                 <tr className="text-left text-gray-400 text-sm border-b">
                                     <th className="pb-3">Product</th>
+                                    <th className="pb-3">Category</th>
                                     <th className="pb-3">Colors</th>
                                     <th className="pb-3">Stock</th>
                                     <th className="pb-3">Price</th>
@@ -459,23 +659,32 @@ export default function DashboardProducts() {
                                         animate={{ opacity: 1 }}
                                         className="border-b last:border-0 hover:bg-gray-50 transition"
                                     >
-                                        <td className="py-4 flex items-center gap-4">
-                                            <img
-                                                src={product.colors?.[0]?.image || "/placeholder.png"}
-                                                className="w-12 h-12 rounded-xl object-cover"
-                                                alt={product.name}
-                                                onError={(e) => { e.target.src = "/placeholder.png"; }}
-                                            />
-                                            
+                                        <td className="py-4">
+                                            <div className="flex items-center gap-4">
+                                                <img
+                                                    src={product.colors?.[0]?.image || "/placeholder.png"}
+                                                    className="w-12 h-12 rounded-xl object-cover"
+                                                    alt={product.name}
+                                                    onError={(e) => { e.target.src = "/placeholder.png"; }}
+                                                />
+                                                <div>
+                                                    <p className="font-medium text-sm">{product.name}</p>
+                                                    <p className="text-xs text-gray-400">ID: {product.id}</p>
+                                                </div>
+                                            </div>
                                         </td>
-                                       
+                                        <td className="py-4">
+                                            <span className="px-2 py-1 bg-pink-50 rounded-full text-xs text-gray-600">
+                                                {getCategoryName(product.category)}
+                                            </span>
+                                        </td>
                                         <td className="py-4">
                                             <div className="flex gap-1.5 flex-wrap">
                                                 {product.colors?.map((c, i) => (
                                                     <div key={i} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full">
-                                                        <img 
-                                                            src={c.image || "/placeholder.png"} 
-                                                            className="w-5 h-5 rounded-full object-cover border" 
+                                                        <img
+                                                            src={c.image || "/placeholder.png"}
+                                                            className="w-5 h-5 rounded-full object-cover border"
                                                             alt={c.color}
                                                             onError={(e) => { e.target.src = "/placeholder.png"; }}
                                                         />
@@ -486,18 +695,17 @@ export default function DashboardProducts() {
                                             </div>
                                         </td>
                                         <td className="py-4">
-                                            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                                getTotalStock(product) > 10
-                                                    ? "bg-green-50 text-green-600"
-                                                    : getTotalStock(product) > 0
-                                                        ? "bg-yellow-50 text-yellow-600"
-                                                        : "bg-red-50 text-red-600"
-                                            }`}>
+                                            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getTotalStock(product) > 10
+                                                ? "bg-green-50 text-green-600"
+                                                : getTotalStock(product) > 0
+                                                    ? "bg-yellow-50 text-yellow-600"
+                                                    : "bg-red-50 text-red-600"
+                                                }`}>
                                                 <FaBox className="inline mr-1" size={10} />
                                                 {getTotalStock(product)}
                                             </span>
                                         </td>
-                                        <td className="py-4 font-bold">{product.price.toLocaleString()} DA</td>
+                                        <td className="py-4 font-bold">{product.price?.toLocaleString()} DA</td>
                                         <td className="py-4 text-right">
                                             <button onClick={() => openEdit(product)} className="p-2 text-blue-500 cursor-pointer hover:bg-blue-50 rounded-lg transition mr-1">
                                                 <FaEdit />
@@ -517,9 +725,9 @@ export default function DashboardProducts() {
                         {filtered.map((product) => (
                             <motion.div key={product.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-50 rounded-2xl p-4 space-y-3">
                                 <div className="flex items-center gap-3">
-                                    <img 
-                                        src={product.colors?.[0]?.image || "/placeholder.png"} 
-                                        className="w-14 h-14 rounded-xl object-cover" 
+                                    <img
+                                        src={product.colors?.[0]?.image || "/placeholder.png"}
+                                        className="w-14 h-14 rounded-xl object-cover"
                                         alt={product.name}
                                         onError={(e) => { e.target.src = "/placeholder.png"; }}
                                     />
@@ -528,7 +736,7 @@ export default function DashboardProducts() {
                                         <span className="px-2 py-0.5 bg-pink-50 rounded-full text-xs text-gray-600 inline-block mt-1">{getCategoryName(product.category)}</span>
                                     </div>
                                     <div className="text-right">
-                                        <span className="font-bold text-sm block">{product.price.toLocaleString()} DA</span>
+                                        <span className="font-bold text-sm block">{product.price?.toLocaleString()} DA</span>
                                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${getTotalStock(product) > 0 ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
                                             Stock: {getTotalStock(product)}
                                         </span>
@@ -537,9 +745,9 @@ export default function DashboardProducts() {
                                 <div className="flex gap-1.5 flex-wrap">
                                     {product.colors?.map((c, i) => (
                                         <div key={i} className="flex items-center gap-1 bg-white px-2 py-1 rounded-full border">
-                                            <img 
-                                                src={c.image || "/placeholder.png"} 
-                                                className="w-5 h-5 rounded-full object-cover" 
+                                            <img
+                                                src={c.image || "/placeholder.png"}
+                                                className="w-5 h-5 rounded-full object-cover"
                                                 alt={c.color}
                                                 onError={(e) => { e.target.src = "/placeholder.png"; }}
                                             />
@@ -561,9 +769,9 @@ export default function DashboardProducts() {
             {/* ========== DELETE CONFIRMATION MODAL ========== */}
             <AnimatePresence>
                 {showDeleteModal && deleteTarget && (
-                    <motion.div 
-                        initial={{ opacity: 0 }} 
-                        animate={{ opacity: 1 }} 
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4"
                         onClick={cancelDelete}
@@ -609,8 +817,15 @@ export default function DashboardProducts() {
                                     <input type="number" placeholder="Price (DA)" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base" />
                                     <input type="number" placeholder="Old Price (optional)" value={form.oldPrice} onChange={(e) => setForm({ ...form, oldPrice: e.target.value })} className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base" />
                                 </div>
-                                <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border p-3.5 sm:p-4 cursor-pointer rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white text-sm sm:text-base">
-                                    {categories.map((cat) => (<option key={cat.id} value={cat.id}>{cat.name}</option>))}
+
+                                <select 
+                                    value={form.category} 
+                                    onChange={(e) => setForm({ ...form, category: e.target.value })} 
+                                    className="w-full border p-3.5 sm:p-4 cursor-pointer rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white text-sm sm:text-base"
+                                >
+                                    {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
                                 </select>
 
                                 <div className="border rounded-xl p-3 sm:p-4 space-y-3">
@@ -622,9 +837,9 @@ export default function DashboardProducts() {
                                     <div className="space-y-2">
                                         {form.colors.map((c, i) => (
                                             <div key={i} className="flex items-center gap-3 bg-gray-50 p-2.5 sm:p-3 rounded-xl">
-                                                <img 
-                                                    src={c.image || "/placeholder.png"} 
-                                                    className="w-10 h-10 rounded-lg object-cover flex-shrink-0" 
+                                                <img
+                                                    src={c.image || "/placeholder.png"}
+                                                    className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                                                     alt={c.color}
                                                     onError={(e) => { e.target.src = "/placeholder.png"; }}
                                                 />
@@ -639,7 +854,28 @@ export default function DashboardProducts() {
                                     </div>
                                 </div>
 
-                                <button type="submit" className="w-full bg-black cursor-pointer text-white py-3.5 sm:py-4 rounded-full hover:bg-pink-200 hover:text-black transition font-medium text-sm sm:text-base mt-2">{editing ? "Update Product" : "Add Product"}</button>
+                                {editing && pendingOperations.length > 0 && (
+                                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+                                        <p className="text-xs text-yellow-700 font-medium">
+                                            {pendingOperations.length} pending change{pendingOperations.length > 1 ? 's' : ''} will be saved on update
+                                        </p>
+                                    </div>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className={`w-full py-3.5 sm:py-4 rounded-full font-medium text-sm sm:text-base mt-2 transition cursor-pointer
+                                        ${isSubmitting
+                                            ? "bg-gray-400 text-white cursor-not-allowed"
+                                            : "bg-black text-white hover:bg-pink-200 hover:text-black"
+                                        }`}
+                                >
+                                    {isSubmitting
+                                        ? (editing ? "Updating..." : "Adding...")
+                                        : (editing ? "Update Product" : "Add Product")
+                                    }
+                                </button>
                             </form>
                         </motion.div>
                     </motion.div>
@@ -666,12 +902,11 @@ export default function DashboardProducts() {
                                                 key={c.name}
                                                 type="button"
                                                 onClick={() => setColorForm({ ...colorForm, color: c.name })}
-                                                className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 transition-all duration-200 ${
-                                                    colorForm.color === c.name 
-                                                        ? "border-black scale-110 ring-2 ring-pink-300 ring-offset-2" 
-                                                        : "border-gray-200 hover:border-gray-400 hover:scale-105"
-                                                }`}
-                                                style={{ 
+                                                className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 transition-all duration-200 ${colorForm.color === c.name
+                                                    ? "border-black scale-110 ring-2 ring-pink-300 ring-offset-2"
+                                                    : "border-gray-200 hover:border-gray-400 hover:scale-105"
+                                                    }`}
+                                                style={{
                                                     backgroundColor: c.hex,
                                                     boxShadow: c.name === "White" ? "inset 0 0 0 1px #e5e7eb" : "none"
                                                 }}
@@ -749,7 +984,16 @@ export default function DashboardProducts() {
                             <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 sm:hidden" />
 
                             <div className="space-y-3 sm:space-y-4">
-                                <input placeholder="Size label (e.g. S, M, L, XL)" value={sizeForm.label} onChange={(e) => setSizeForm({ ...sizeForm, label: e.target.value })} className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base uppercase" />
+                                <select
+                                    value={sizeForm.label}
+                                    onChange={(e) => setSizeForm({ ...sizeForm, label: e.target.value })}
+                                    className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base bg-white"
+                                >
+                                    <option value="">Select Size</option>
+                                    {AVAILABLE_SIZES.map((size) => (
+                                        <option key={size} value={size}>{size}</option>
+                                    ))}
+                                </select>
                                 <input type="number" placeholder="Quantity in stock" value={sizeForm.quantity} onChange={(e) => setSizeForm({ ...sizeForm, quantity: e.target.value })} className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base" min="0" />
                                 <button type="button" onClick={saveSize} className="w-full bg-black text-white cursor-pointer py-3.5 sm:py-4 rounded-full hover:bg-pink-200 hover:text-black transition font-medium text-sm sm:text-base">{editingSizeIndex !== null ? "Update Size" : "Add Size"}</button>
                             </div>

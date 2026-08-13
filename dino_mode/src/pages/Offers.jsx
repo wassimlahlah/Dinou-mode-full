@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import ProductCard from "../components/Products/ProductCard";
-import { useShop } from "../context/ShopContext"; // ← جديد
+import { useShop } from "../context/ShopContext";
 
 export default function Offers() {
-    // ← جديد: نجيبو products من Context
     const { products, loading } = useShop();
-    const offers = products.filter((product) => product.oldPrice);
+
+    // ← صحيح: oldPrice لازم يكون number > 0
+    const offers = products.filter((product) => Number(product.oldPrice) > 0);
 
     if (loading) {
         return (

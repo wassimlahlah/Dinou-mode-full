@@ -1,23 +1,21 @@
 import api from "./axios";
 
-export const adaptProduct = (p) => {
-    return {
-        ...p,
-        category: p.category_id ?? p.category?.id ?? p.category ?? "",
-        categoryName: p.category_name ?? p.category?.name ?? "",
-        colors: p.productsInfo?.map((info) => ({
-            id: info.id,
-            color: info.color,
-            image: info.image || "",
-            sizes: info.sizesQte?.map((sq) => ({
-                id: sq.id,
-                label: sq.size,
-                number: null,
-                quantity: sq.qte,
-            })) || [],
+export const adaptProduct = (p) => ({
+    ...p,
+    category: p.category ?? "",
+    categoryName: p.category_name ?? "",
+    colors: p.productsInfo?.map((info) => ({
+        id: info.id,
+        color: info.color,
+        image: info.image || "",
+        sizes: info.sizesQte?.map((sq) => ({
+            id: sq.id,
+            label: sq.size,        // ← "S"
+            number: sq.eqSize,    // ← 36 (من EqSize enum)
+            quantity: sq.qte,
         })) || [],
-    };
-};
+    })) || [],
+});
 
 export const getProducts = async (categoryId = 0) => {
     const response = await api.get(`/products_method/${categoryId}/0/`);
