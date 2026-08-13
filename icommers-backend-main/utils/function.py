@@ -8,11 +8,11 @@ from products.models import LivrisonPrice
 
 
 def price_and_livraison(willya, price, quantity):
-    obj = LivrisonPrice.objects.get(
-        willya=willya
-    )
+    #obj = LivrisonPrice.objects.get(
+     #   willya=willya
+    #)
     
-    return price * quantity + obj.price
+    return price * quantity + 0
 
 
 

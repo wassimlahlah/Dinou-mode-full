@@ -25,6 +25,7 @@ class ProductColorImage(models.Model):
 class ProductSize(models.Model):
     productColor = models.ForeignKey(ProductColorImage, on_delete=models.CASCADE, related_name='sizesQte')
     size = models.CharField( choices=Size.choices , null=True, blank=True)
+    eqSize=models.CharField( choices=EqSize.choices , null=True, blank=True)
     qte=models.PositiveIntegerField(default=0)
     
 class Commend(models.Model):   
