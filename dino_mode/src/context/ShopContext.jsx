@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { getProducts, getCategories, adaptProduct } from "../api/productService";
+import { getProducts, getCategories } from "../api/productService";
 
 const ShopContext = createContext();
 
@@ -11,44 +11,79 @@ export function ShopProvider({ children }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const cats = await getCategories();
-                setCategories(cats);
-            } catch (err) {
-                console.error("Failed to fetch categories:", err);
-                setError(err.message);
-            }
-        };
-        fetchCategories();
-    }, []);
-
-    useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchShopData = async () => {
             try {
                 setLoading(true);
-                const prods = await getProducts(0);
+                setError(null);
+
+                // 1️⃣ نعرض البيانات المخزنة مباشرة
+                const cachedProducts = sessionStorage.getItem("products");
+                const cachedCategories = sessionStorage.getItem("categories");
+
+                if (cachedProducts) {
+                    setProducts(JSON.parse(cachedProducts));
+                }
+
+                if (cachedCategories) {
+                    setCategories(JSON.parse(cachedCategories));
+                }
+
+                // 2️⃣ نجيب البيانات في نفس الوقت
+                const [prods, cats] = await Promise.all([
+                    getProducts(0),
+                    getCategories(),
+                ]);
+
+                // 3️⃣ تحديث الـ state
                 setProducts(prods);
+                setCategories(cats);
+
+                // 4️⃣ تخزين البيانات للاستعمال القادم
+                sessionStorage.setItem(
+                    "products",
+                    JSON.stringify(prods)
+                );
+
+                sessionStorage.setItem(
+                    "categories",
+                    JSON.stringify(cats)
+                );
+
             } catch (err) {
-                console.error("Failed to fetch products:", err);
+                console.error("Failed to fetch shop data:", err);
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
-        fetchProducts();
+
+        fetchShopData();
     }, []);
 
-    const addToCart = (product, quantity, size, color, productSizeId, colorImage) => {
+    const addToCart = (
+        product,
+        quantity,
+        size,
+        color,
+        productSizeId,
+        colorImage
+    ) => {
         setCart((prev) => {
-            const existing = prev.find((item) => item.productSizeId === productSizeId);
+            const existing = prev.find(
+                (item) => item.productSizeId === productSizeId
+            );
+
             if (existing) {
                 return prev.map((item) =>
                     item.productSizeId === productSizeId
-                        ? { ...item, quantity: item.quantity + quantity }
+                        ? {
+                              ...item,
+                              quantity: item.quantity + quantity,
+                          }
                         : item
                 );
             }
+
             return [
                 ...prev,
                 {
@@ -68,23 +103,34 @@ export function ShopProvider({ children }) {
     };
 
     const removeFromCart = (productSizeId) => {
-        setCart((prev) => prev.filter((item) => item.productSizeId !== productSizeId));
+        setCart((prev) =>
+            prev.filter(
+                (item) => item.productSizeId !== productSizeId
+            )
+        );
     };
 
     const updateQuantity = (productSizeId, quantity) => {
         if (quantity < 1) return;
+
         setCart((prev) =>
             prev.map((item) =>
-                item.productSizeId === productSizeId ? { ...item, quantity } : item
+                item.productSizeId === productSizeId
+                    ? { ...item, quantity }
+                    : item
             )
         );
     };
 
     const clearCart = () => setCart([]);
 
-    const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const cartTotal = cart.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+    );
 
-    const getProductById = (id) => products.find((p) => p.id === id);
+    const getProductById = (id) =>
+        products.find((p) => p.id === id);
 
     return (
         <ShopContext.Provider
