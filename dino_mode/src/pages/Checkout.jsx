@@ -191,7 +191,7 @@ export default function Checkout() {
             <div className="p-6 md:p-10 max-w-2xl mx-auto text-center">
                 <p className="text-5xl md:text-6xl mb-6">🛒</p>
                 <p className="text-xl md:text-2xl text-gray-400 mb-6">سلة التسوق الخاصة بك فارغة
-</p>
+                </p>
                 <Link to="/shop" className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-pink-500 transition">
                     العودة إلى المتجر
 
@@ -209,9 +209,9 @@ export default function Checkout() {
                     <FaCheck className="text-pink-500 text-3xl md:text-4xl" />
                 </motion.div>
                 <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">تم تأكيد الطلب!
-</h2>
+                </h2>
                 <p className="text-gray-500 mb-2 text-sm md:text-base">شكرًا لك
- <span className="font-semibold text-gray-800">{formData.fullName}</span>,</p>
+                    <span className="font-semibold text-gray-800">{formData.fullName}</span>,</p>
                 <p className="text-gray-500 mb-8 text-sm md:text-base">سنقوم بالتواصل معك قريبًا على <span className="font-semibold text-gray-800">{formData.phone}</span>.</p>
                 <Link to="/shop" className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-pink-500 transition">
                     مواصلة التسوق
@@ -255,17 +255,49 @@ export default function Checkout() {
 
                             {/* 🔥 Receipt Upload for non-Alger */}
                             {formData.willya && formData.willya !== "16 - Alger" && (
-                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-                                    className="border-2 border-dashed border-pink-200 rounded-xl p-4 text-center">
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    className="border-2 border-dashed border-pink-200 rounded-xl p-4 text-center"
+                                >
+                                    <div className="mb-4">
+                                        <p className="text-sm font-semibold text-gray-700">
+                                            التوصيل خارج الجزائر العاصمة
+                                        </p>
+
+                                        <p className="text-sm text-pink-600 font-bold mt-1">
+                                            يجب دفع 1000 DA مسبقًا لتأكيد الطلب
+                                        </p>
+
+                                        <p className="text-xs text-gray-500 mt-2">
+                                            CCP: <span className="font-bold text-gray-700">00799999004183356066</span>
+                                        </p>
+
+                                        <p className="text-xs text-gray-400 mt-1">
+                                            قم بتحويل 1000 DA إلى حساب CCP أعلاه ثم أرفق صورة الإيصال.
+                                        </p>
+                                    </div>
+
                                     <label className="cursor-pointer block">
                                         <FaUpload className="mx-auto text-pink-400 text-2xl mb-2" />
-                                        <span className="text-sm text-gray-600 font-medium">تحميل الإيصال(1000 DZD deposit)</span>
-                                        <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+
+                                        <span className="text-sm text-gray-600 font-medium">
+                                            تحميل الإيصال
+                                        </span>
+
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            className="hidden"
+                                        />
                                     </label>
+
                                     {receiptImage && (
-                                        <p className="text-xs text-green-600 mt-2">✓ {receiptImage.name}</p>
+                                        <p className="text-xs text-green-600 mt-2">
+                                            ✓ {receiptImage.name}
+                                        </p>
                                     )}
-                                    <p className="text-xs text-gray-400 mt-1">  مطلوب للتوصيل خارج الجزائر العاصمة</p>
                                 </motion.div>
                             )}
                         </div>
@@ -293,7 +325,7 @@ export default function Checkout() {
                         </div>
                         <div className="border-t border-gray-200 pt-4 space-y-3">
                             <div className="flex justify-between text-gray-600 text-sm md:text-base"><span>Sous-total</span><span>{cartTotal.toLocaleString()} DA</span></div>
-                            
+
                         </div>
                         <div className="border-t border-gray-200 mt-4 pt-4">
                             <div className="flex justify-between items-center">
