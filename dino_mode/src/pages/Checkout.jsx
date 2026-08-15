@@ -266,7 +266,7 @@ export default function Checkout() {
                                         </p>
 
                                         <p className="text-sm text-pink-600 font-bold mt-1">
-                                            يجب دفع 1000 DA مسبقًا لتأكيد الطلب
+                                                     للتأكيد الطلب يجب دفع 1000 دينار مسبقا
                                         </p>
 
                                         <p className="text-xs text-gray-500 mt-2">
