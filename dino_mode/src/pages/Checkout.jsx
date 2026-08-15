@@ -224,13 +224,13 @@ export default function Checkout() {
     return (
         <div className="p-4 md:p-10 max-w-7xl mx-auto">
             <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-                className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-10">أكمل طلبك</motion.h1>
+                className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-10">Complétez votre commande</motion.h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-10">
                 <div className="lg:col-span-3">
                     <motion.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                         onSubmit={handleSubmit} className="bg-white rounded-2xl p-5 md:p-8 shadow-sm border border-gray-100">
-                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6">معلومات الشحن</h2>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6n">معلومات_الشحن</h2>
                         <div className="space-y-4 md:space-y-5">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">الاسم الكامل <span className="text-red-500">*</span></label>
@@ -247,7 +247,7 @@ export default function Checkout() {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">الولاية <span className="text-red-500">*</span></label>
                                     <select name="willya" required value={formData.willya} onChange={handleChange}
                                         className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F7D6DF] transition bg-white">
-                                        <option value="">Select a wilaya</option>
+                                        <option value="">اختر ولاية</option>
                                         {WILAYAS.map((w) => (<option key={w} value={w}>{w}</option>))}
                                     </select>
                                 </div>
@@ -271,7 +271,7 @@ export default function Checkout() {
                         </div>
                         <button type="submit" disabled={loading}
                             className={`w-full mt-6 md:mt-8 py-3.5 md:py-4 rounded-full font-bold text-base md:text-lg transition ${loading ? "bg-gray-300 cursor-not-allowed" : "bg-black text-white hover:bg-pink-500"}`}>
-                            {loading ? "Processing..." : "Place Order"}
+                            {loading ? "قيد المعالجة..." : "اتمام الطلب"}
                         </button>
                     </motion.form>
                 </div>
@@ -279,7 +279,7 @@ export default function Checkout() {
                 <div className="lg:col-span-2">
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
                         className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100 lg:sticky lg:top-6">
-                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 font-serif">Order Summary</h2>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 font-serif">Récapitulatif de la commande</h2>
                         <div className="space-y-3 mb-5 md:mb-6 max-h-48 md:max-h-60 overflow-y-auto">
                             {cart.map((item) => (
                                 <div key={item.productSizeId} className="flex justify-between text-sm">
@@ -292,7 +292,7 @@ export default function Checkout() {
                             ))}
                         </div>
                         <div className="border-t border-gray-200 pt-4 space-y-3">
-                            <div className="flex justify-between text-gray-600 text-sm md:text-base"><span>Subtotal</span><span>{cartTotal.toLocaleString()} DA</span></div>
+                            <div className="flex justify-between text-gray-600 text-sm md:text-base"><span>Sous-total</span><span>{cartTotal.toLocaleString()} DA</span></div>
                             
                         </div>
                         <div className="border-t border-gray-200 mt-4 pt-4">
@@ -302,8 +302,8 @@ export default function Checkout() {
                             </div>
                         </div>
                         <div className="mt-5 md:mt-6 space-y-2.5 pt-4 border-t border-gray-100">
-                            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500"><FaShieldAlt className="text-pink-500 shrink-0" /><span>Secure Payment</span></div>
-                            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500"><FaTruck className="text-pink-500 shrink-0" /><span>Fast Delivery</span></div>
+                            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500"><FaShieldAlt className="text-pink-500 shrink-0" /><span>Paiement sécurisé</span></div>
+                            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500"><FaTruck className="text-pink-500 shrink-0" /><span>Livraison rapide</span></div>
                         </div>
                     </motion.div>
                 </div>
