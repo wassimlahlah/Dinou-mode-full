@@ -5,19 +5,65 @@ import { FaCheck, FaTruck, FaShieldAlt, FaUpload } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../api/axios";
-
 const WILAYAS = [
-    "Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Bejaia",
-    "Biskra", "Bechar", "Blida", "Bouira", "Tamanrasset", "Tebessa",
-    "Tlemcen", "Tiaret", "Tizi Ouzou", "Alger", "Djelfa", "Jijel",
-    "Setif", "Saida", "Skikda", "Sidi Bel Abbes", "Annaba", "Guelma",
-    "Constantine", "Medea", "Mostaganem", "M'Sila", "Mascara", "Ouargla",
-    "Oran", "El Bayadh", "Illizi", "Bordj Bou Arreridj", "Boumerdes",
-    "El Tarf", "Tindouf", "Tissemsilt", "El Oued", "Khenchela",
-    "Souk Ahras", "Tipaza", "Mila", "Ain Defla", "Naama",
-    "Ain Temouchent", "Ghardaia", "Relizane", "Timimoun",
-    "Bordj Badji Mokhtar", "Ouled Djellal", "Beni Abbes", "In Salah",
-    "In Guezzam", "Touggourt", "Djanet", "El M'Ghair", "El Meniaa"
+    "01 - Adrar",
+    "02 - Chlef",
+    "03 - Laghouat",
+    "04 - Oum El Bouaghi",
+    "05 - Batna",
+    "06 - Bejaia",
+    "07 - Biskra",
+    "08 - Bechar",
+    "09 - Blida",
+    "10 - Bouira",
+    "11 - Tamanrasset",
+    "12 - Tebessa",
+    "13 - Tlemcen",
+    "14 - Tiaret",
+    "15 - Tizi Ouzou",
+    "16 - Alger",
+    "17 - Djelfa",
+    "18 - Jijel",
+    "19 - Setif",
+    "20 - Saida",
+    "21 - Skikda",
+    "22 - Sidi Bel Abbes",
+    "23 - Annaba",
+    "24 - Guelma",
+    "25 - Constantine",
+    "26 - Medea",
+    "27 - Mostaganem",
+    "28 - M'Sila",
+    "29 - Mascara",
+    "30 - Ouargla",
+    "31 - Oran",
+    "32 - El Bayadh",
+    "33 - Illizi",
+    "34 - Bordj Bou Arreridj",
+    "35 - Boumerdes",
+    "36 - El Tarf",
+    "37 - Tindouf",
+    "38 - Tissemsilt",
+    "39 - El Oued",
+    "40 - Khenchela",
+    "41 - Souk Ahras",
+    "42 - Tipaza",
+    "43 - Mila",
+    "44 - Ain Defla",
+    "45 - Naama",
+    "46 - Ain Temouchent",
+    "47 - Ghardaia",
+    "48 - Relizane",
+    "49 - Timimoun",
+    "50 - Bordj Badji Mokhtar",
+    "51 - Ouled Djellal",
+    "52 - Beni Abbes",
+    "53 - In Salah",
+    "54 - In Guezzam",
+    "55 - Touggourt",
+    "56 - Djanet",
+    "57 - El M'Ghair",
+    "58 - El Meniaa"
 ];
 
 export default function Checkout() {
@@ -35,7 +81,7 @@ export default function Checkout() {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        if (e.target.name === "willya" && e.target.value === "Alger") {
+        if (e.target.name === "willya" && e.target.value === "16 - Alger") {
             setReceiptImage(null);
         }
     };
@@ -65,7 +111,7 @@ export default function Checkout() {
             toast.error("Please select your wilaya");
             return;
         }
-        if (formData.willya !== "Alger" && !receiptImage) {
+        if (formData.willya !== "16 - Alger" && !receiptImage) {
             toast.error("Please upload a receipt image");
             return;
         }
@@ -203,7 +249,7 @@ export default function Checkout() {
                             </div>
 
                             {/* 🔥 Receipt Upload for non-Alger */}
-                            {formData.willya && formData.willya !== "Alger" && (
+                            {formData.willya && formData.willya !== "16 - Alger" && (
                                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
                                     className="border-2 border-dashed border-pink-200 rounded-xl p-4 text-center">
                                     <label className="cursor-pointer block">
