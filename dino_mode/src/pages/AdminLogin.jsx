@@ -67,13 +67,13 @@ export default function AdminLogin() {
                     Dinou<span className="text-pink-500">Moda</span>
                 </h1>
                 <p className="text-center text-gray-400 text-xs md:text-sm uppercase tracking-[0.3em] mb-6 md:mb-8">
-                    Admin Panel
+                    Panneau d'administration
                 </p>
 
                 <div className="space-y-3 md:space-y-4">
                     <input
                         type="text"
-                        placeholder="Username"
+                        placeholder="Nom d'utilisateur"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         autoComplete="username"
@@ -81,7 +81,7 @@ export default function AdminLogin() {
                     />
                     <input
                         type="password"
-                        placeholder="Password"
+                        placeholder="Mot de passe"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         autoComplete="current-password"
@@ -94,7 +94,7 @@ export default function AdminLogin() {
                     disabled={loading}
                     className="w-full bg-black text-white cursor-pointer py-3.5 md:py-4 rounded-full hover:bg-pink-500 transition font-medium mt-6 md:mt-8 disabled:opacity-50"
                 >
-                    {loading ? "Loading..." : "Login"}
+                    {loading ? "Chargement..." : "Connexion"}
                 </button>
 
                 <p className="text-center text-xs text-gray-400 mt-4">

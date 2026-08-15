@@ -32,8 +32,8 @@ export default function Categories() {
     if (loading) {
         return (
             <section className="py-20 bg-pink-50">
-                <h2 className="text-center text-4xl md:text-5xl font-serif mb-12">Categories</h2>
-                <div className="text-center text-gray-500">Loading...</div>
+                <h2 className="text-center text-4xl md:text-5xl font-serif mb-12">Catégories</h2>
+                <div className="text-center text-gray-500">Chargement...</div>
             </section>
         );
     }
@@ -51,8 +51,8 @@ export default function Categories() {
                     viewport={{ once: true }}
                     className="text-center mb-8 md:mb-12"
                 >
-                    <h2 className="text-3xl md:text-5xl font-serif mb-2">Browse Categories</h2>
-                    <p className="text-gray-500 text-sm md:text-base">Find your perfect style</p>
+                    <h2 className="text-3xl md:text-5xl font-serif mb-2">Parcourir les catégories</h2>
+                    <p className="text-gray-500 text-sm md:text-base">Trouvez votre style parfait</p>
                 </motion.div>
 
                 {/* ← Grid ديال الكارتات */}

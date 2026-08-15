@@ -89,7 +89,8 @@ export default function CategoryHero({ categories }) {
                                     to={`/shop?category=${cat.id}`}
                                     className="inline-block bg-white text-black px-6 md:px-8 py-3 rounded-full font-medium hover:bg-pink-200 transition text-sm md:text-base"
                                 >
-                                    Shop Now
+                                    Achetez maintenant
+
                                 </Link>
                             </motion.div>
                         </div>

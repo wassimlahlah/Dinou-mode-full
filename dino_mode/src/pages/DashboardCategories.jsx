@@ -107,21 +107,21 @@ export default function DashboardCategories() {
         }
     };
 
-   const confirmDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-        // ← صحيح: category_id هو ID ديال category (ماشي 0)
-        await api.delete(`/category_method/${deleteTarget.id}/`);
-        toast.success("Category deleted");
-        fetchCategories();
-    } catch (err) {
-        console.error(err);
-        toast.error(err.response?.data?.error || "Failed to delete category");
-    } finally {
-        setShowDeleteModal(false);
-        setDeleteTarget(null);
-    }
-};
+    const confirmDelete = async () => {
+        if (!deleteTarget) return;
+        try {
+            // ← صحيح: category_id هو ID ديال category (ماشي 0)
+            await api.delete(`/category_method/${deleteTarget.id}/`);
+            toast.success("Category deleted");
+            fetchCategories();
+        } catch (err) {
+            console.error(err);
+            toast.error(err.response?.data?.error || "Failed to delete category");
+        } finally {
+            setShowDeleteModal(false);
+            setDeleteTarget(null);
+        }
+    };
 
     const cancelDelete = () => {
         setShowDeleteModal(false);
@@ -176,10 +176,11 @@ export default function DashboardCategories() {
             <DashboardSidebar />
             <main className="flex-1 p-4 md:p-6 lg:p-10 overflow-x-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 md:mb-8">
-                    <h1 className="text-2xl md:text-4xl font-serif font-bold">Categories</h1>
+                    <h1 className="text-2xl md:text-4xl font-serif font-bold">catégories</h1>
                     <button onClick={openAdd}
                         className="bg-black text-white mt-2 cursor-pointer px-5 md:px-6 py-2.5 md:py-3 rounded-full flex items-center gap-2 hover:bg-pink-200 hover:text-black transition text-sm md:text-base w-full sm:w-auto justify-center">
-                        <FaPlus size={14} /> Add Category
+                        <FaPlus size={14} /> Ajouter catégorie
+
                     </button>
                 </div>
 
@@ -247,11 +248,11 @@ export default function DashboardCategories() {
                                 <button onClick={() => openEdit(cat)}
                                     className="flex-1 py-2.5 text-blue-500 cursor-pointer bg-blue-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /></svg>
-                                    Edit
+                                    Modifier
                                 </button>
                                 <button onClick={() => handleDelete(cat.id, cat.name)}  // ← استعمل handleDelete
                                     className="flex-1 py-2.5 text-red-500 cursor-pointer bg-red-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1">
-                                    <FaTrash size={12} /> Delete
+                                    <FaTrash size={12} /> Supprimer
                                 </button>
                             </div>
                         </motion.div>
@@ -279,13 +280,14 @@ export default function DashboardCategories() {
                                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <FaExclamationTriangle className="text-red-500 text-2xl" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Category?</h3>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Supprimer la catégorie
+                                    ?</h3>
                                 <p className="text-gray-500 text-sm mb-6">
-                                    Are you sure you want to delete <span className="font-semibold text-gray-700">"{deleteTarget.name}"</span>? This action cannot be undone.
+                                    Êtes-vous sûr de vouloir supprimer la catégorie <span className="font-semibold text-gray-700">"{deleteTarget.name}"</span> ? Cette action ne peut être annulée.
                                 </p>
                                 <div className="flex gap-3">
-                                    <button onClick={cancelDelete} className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition cursor-pointer">Cancel</button>
-                                    <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition cursor-pointer shadow-lg shadow-red-200">Delete</button>
+                                    <button onClick={cancelDelete} className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition cursor-pointer">Annuler</button>
+                                    <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition cursor-pointer shadow-lg shadow-red-200">Supprimer</button>
                                 </div>
                             </motion.div>
                         </motion.div>
@@ -314,7 +316,7 @@ export default function DashboardCategories() {
 
                                 <div className="flex justify-between items-center mb-5 sm:mb-6">
                                     <h2 className="text-xl sm:text-2xl font-bold">
-                                        {editingId !== null ? "Edit Category" : "New Category"}
+                                        {editingId !== null ? "Modifier la catégorie" : "Ajouter une catégorie"}
                                     </h2>
                                     <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
                                         <FaTimes />
@@ -325,7 +327,7 @@ export default function DashboardCategories() {
                                     <input
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                        placeholder="Category name"
+                                        placeholder="Nom de la catégorie"
                                         className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base"
                                     />
 
@@ -348,12 +350,12 @@ export default function DashboardCategories() {
                                             className="w-full border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center gap-2 hover:border-pink-400 hover:bg-pink-50 transition cursor-pointer"
                                         >
                                             <FaUpload size={20} className="text-gray-400" />
-                                            <span className="text-sm text-gray-500">Click to upload images</span>
+                                            <span className="text-sm text-gray-500">Cliquez pour télécharger des images</span>
                                             <span className="text-xs text-gray-400">JPG, PNG, WEBP (max 5MB)</span>
                                         </button>
 
                                         {(form.images?.length || 0) === 0 && (
-                                            <p className="text-xs text-gray-400 text-center py-4">No images added yet</p>
+                                            <p className="text-xs text-gray-400 text-center py-4">Aucune image ajoutée pour le moment</p>
                                         )}
                                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                                             {form.images?.map((img, idx) => (
@@ -374,7 +376,7 @@ export default function DashboardCategories() {
                                         onClick={handleSave}
                                         className="w-full bg-black text-white py-3.5 sm:py-4 rounded-full hover:bg-pink-200 hover:text-black transition font-medium text-sm sm:text-base"
                                     >
-                                        {editingId !== null ? "Update Category" : "Add Category"}
+                                        {editingId !== null ? "Modifier la catégorie" : "Ajouter une catégorie"}
                                     </button>
                                 </div>
                             </motion.div>

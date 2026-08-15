@@ -41,7 +41,8 @@ export default function CategoryCard({ category }) {
                     {category.name}
                 </h3>
                 <span className="text-white/70 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    View products →
+                    Voir les produits
+ →
                 </span>
             </div>
 

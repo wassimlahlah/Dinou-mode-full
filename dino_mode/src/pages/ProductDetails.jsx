@@ -25,7 +25,7 @@ export default function ProductDetails() {
     useEffect(() => {
         const loadProduct = async () => {
             setPageLoading(true);
-            
+
             // 1. نحاولو نلقاوه فـ Context
             const found = getProductById(Number(id));
             if (found) {
@@ -66,7 +66,7 @@ export default function ProductDetails() {
     if (pageLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-pink-50">
-                <p className="text-gray-500 text-lg">Loading...</p>
+                <p className="text-gray-500 text-lg">Chargement...</p>
             </div>
         );
     }
@@ -74,7 +74,7 @@ export default function ProductDetails() {
     if (!product) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-pink-50">
-                <p className="text-gray-500 text-xl">Product not found</p>
+                <p className="text-gray-500 text-xl">Produit non trouvé</p>
             </div>
         );
     }
@@ -155,7 +155,7 @@ export default function ProductDetails() {
                 onClick={() => navigate(-1)}
                 className="md:hidden flex items-center gap-2 text-gray-500 mb-4 text-sm"
             >
-                <FaArrowLeft /> Back
+                <FaArrowLeft /> Retour
             </button>
 
             <motion.div
@@ -183,9 +183,8 @@ export default function ProductDetails() {
                             <button
                                 key={idx}
                                 onClick={() => setMainImage(img)}
-                                className={`w-16 h-16 md:w-20 md:h-20 rounded-lg md:rounded-xl overflow-hidden border-2 transition flex-shrink-0 ${
-                                    mainImage === img ? "border-black" : "border-transparent opacity-60"
-                                }`}
+                                className={`w-16 h-16 md:w-20 md:h-20 rounded-lg md:rounded-xl overflow-hidden border-2 transition flex-shrink-0 ${mainImage === img ? "border-black" : "border-transparent opacity-60"
+                                    }`}
                             >
                                 <img src={img} className="w-full h-full object-cover" alt="" />
                             </button>
@@ -213,7 +212,7 @@ export default function ProductDetails() {
                                     {product.oldPrice.toLocaleString()} DA
                                 </span>
                                 <span className="text-xs md:text-sm bg-green-100 text-green-600 px-2 py-1 rounded-full font-medium">
-                                    Save {(product.oldPrice - product.price).toLocaleString()} DA
+                                    Sauvegarder {(product.oldPrice - product.price).toLocaleString()} DA
                                 </span>
                             </>
                         ) : (
@@ -224,10 +223,11 @@ export default function ProductDetails() {
                     </div>
 
                     <p className="mt-4 md:mt-6 text-sm md:text-base text-gray-600 leading-relaxed">
-                        Premium women's fashion item designed for elegance and comfort.
-                        Crafted with high-quality materials for a luxurious feel.
-                    </p>
 
+                    </p>
+                    Article de mode féminine haut de gamme, conçu pour allier élégance et confort.
+
+                    Confectionné avec des matériaux de haute qualité pour une sensation de luxe.
                     {/* ✅ COLOR - dynamique depuis product.colors */}
                     <div className="mt-6 md:mt-8">
                         <h3 className="text-sm md:text-lg font-bold mb-2 md:mb-3">
@@ -243,11 +243,10 @@ export default function ProductDetails() {
                                 <button
                                     key={colorObj.color}
                                     onClick={() => handleColorSelect(colorObj)}
-                                    className={`px-4 md:px-6 py-2 md:py-2.5 cursor-pointer rounded-lg md:rounded-xl border-2 transition font-medium text-sm md:text-base flex items-center gap-2 ${
-                                        selectedColorObj?.color === colorObj.color
-                                            ? "bg-pink-500 text-white border-pink-500"
-                                            : "border-gray-700 text-gray-700 hover:bg-pink-200"
-                                    }`}
+                                    className={`px-4 md:px-6 py-2 md:py-2.5 cursor-pointer rounded-lg md:rounded-xl border-2 transition font-medium text-sm md:text-base flex items-center gap-2 ${selectedColorObj?.color === colorObj.color
+                                        ? "bg-pink-500 text-white border-pink-500"
+                                        : "border-gray-700 text-gray-700 hover:bg-pink-200"
+                                        }`}
                                 >
                                     <span
                                         className="w-3 h-3 md:w-4 md:h-4 rounded-full border border-white/50"
@@ -261,15 +260,16 @@ export default function ProductDetails() {
                                     {colorObj.color}
                                 </button>
                             )) || (
-                                <span className="text-sm text-gray-400">No colors available</span>
-                            )}
+                                    <span className="text-sm text-gray-400">Aucune couleur disponible
+                                    </span>
+                                )}
                         </div>
                     </div>
 
                     {/* ✅ SIZE - dynamique selon la couleur sélectionnée */}
                     <div className="mt-4 md:mt-6">
                         <h3 className="text-sm md:text-lg font-bold mb-2 md:mb-3">
-                            Size <span className="text-red-500">*</span>
+                            Taille <span className="text-red-500">*</span>
                         </h3>
                         <div className="flex gap-2 md:gap-3 flex-wrap">
                             {availableSizes.length > 0 ? (
@@ -283,13 +283,12 @@ export default function ProductDetails() {
                                             key={size}
                                             onClick={() => !isOutOfStock && handleSizeSelect(size)}
                                             disabled={isOutOfStock}
-                                            className={`border-2 px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl transition font-medium text-sm md:text-base flex-1 md:flex-none relative ${
-                                                selectedSize === size
-                                                    ? "bg-pink-500 text-white border-pink-500"
-                                                    : isOutOfStock
+                                            className={`border-2 px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl transition font-medium text-sm md:text-base flex-1 md:flex-none relative ${selectedSize === size
+                                                ? "bg-pink-500 text-white border-pink-500"
+                                                : isOutOfStock
                                                     ? "border-gray-300 text-gray-300 cursor-not-allowed line-through"
                                                     : "border-gray-700 text-gray-700 hover:bg-pink-200 cursor-pointer"
-                                            }`}
+                                                }`}
                                         >
                                             {size}
                                             {/* ← محدث: Backend ما عندوش number، نخبيوه إذا ماشي موجود */}
@@ -307,7 +306,8 @@ export default function ProductDetails() {
                                     );
                                 })
                             ) : (
-                                <span className="text-sm text-gray-400">Select a color first</span>
+                                <span className="text-sm text-gray-400">Sélectionnez d'abord une couleur
+                                </span>
                             )}
                         </div>
                     </div>
@@ -315,10 +315,11 @@ export default function ProductDetails() {
                     {/* ✅ QUANTITY - limitée par le stock */}
                     <div className="mt-4 md:mt-6">
                         <h3 className="text-sm md:text-lg font-bold mb-2 md:mb-3">
-                            Quantity
+                            Quantité
                             {selectedSize && (
                                 <span className="ml-2 text-gray-400 font-normal text-xs md:text-sm">
-                                    — {maxQuantity} in stock
+                                    — {maxQuantity} en stock
+
                                 </span>
                             )}
                         </h3>
@@ -348,28 +349,27 @@ export default function ProductDetails() {
                         onClick={handleAddToCart}
                         whileTap={{ scale: 0.97 }}
                         disabled={!selectedSize || !selectedColorObj}
-                        className={`mt-6 md:mt-10 w-full cursor-pointer md:w-auto py-3.5 md:py-4 px-6 md:px-12 rounded-full font-medium text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition ${
-                            added
-                                ? "bg-green-500 text-white"
-                                : !selectedSize || !selectedColorObj
+                        className={`mt-6 md:mt-10 w-full cursor-pointer md:w-auto py-3.5 md:py-4 px-6 md:px-12 rounded-full font-medium text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition ${added
+                            ? "bg-green-500 text-white"
+                            : !selectedSize || !selectedColorObj
                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                 : "bg-black text-white hover:bg-pink-500"
-                        }`}
+                            }`}
                     >
                         {added ? (
-                            <>✓ Added</>
+                            <>✓ Ajouté</>
                         ) : (
                             <>
                                 <FaShoppingCart size={16} />
-                                Add To Cart — {(product.price * quantity).toLocaleString()} DA
+                                Ajouter au Panier — {(product.price * quantity).toLocaleString()} DA
                             </>
                         )}
                     </motion.button>
 
                     {/* Trust badges - mobile only */}
                     <div className="md:hidden mt-6 flex items-center justify-center gap-4 text-xs text-gray-400">
-                        <span>✓ Secure</span>
-                        <span>✓ Fast Delivery</span>
+                        <span>✓ Sécurisé</span>
+                        <span>✓ Livraison Rapide</span>
                     </div>
                 </div>
             </motion.div>

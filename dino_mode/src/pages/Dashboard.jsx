@@ -93,38 +93,40 @@ export default function Dashboard() {
         <div className="flex min-h-screen bg-pink-50">
             <DashboardSidebar />
             <main className="flex-1 p-4 md:p-10 overflow-x-hidden">
-                <h1 className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-8">Dashboard Overview</h1>
+                <h1 className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-8">Présentation du tableau de bord
+</h1>
 
-                {loading && <p className="text-center text-gray-400 py-4">Loading...</p>}
+                {loading && <p className="text-center text-gray-400 py-4">Chargement...</p>}
 
                 {/* Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-6 mb-8 md:mb-10">
-                    <StatCard title="Products" number={stats.productsCount} icon={<FaBox />} />
-                    <StatCard title="Orders" number={stats.ordersCount} icon={<FaShoppingBag />} />
-                    <StatCard title="Customers" number={stats.customersCount} icon={<FaUsers />} />
-                    <StatCard title="Revenue" number={stats.revenue} suffix=" DA" icon={<FaMoneyBillWave />} />
+                    <StatCard title="Produits" number={stats.productsCount} icon={<FaBox />} />
+                    <StatCard title="Commandes" number={stats.ordersCount} icon={<FaShoppingBag />} />
+                    <StatCard title="Clients" number={stats.customersCount} icon={<FaUsers />} />
+                    <StatCard title="Revenus" number={stats.revenue} suffix=" DA" icon={<FaMoneyBillWave />} />
                 </div>
 
                 {/* Recent Orders */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                     className="bg-white rounded-2xl md:rounded-3xl shadow-sm p-4 md:p-6 border border-gray-100">
                     <div className="flex justify-between items-center mb-4 md:mb-6">
-                        <h2 className="text-lg md:text-xl font-bold">Recent Orders</h2>
-                        <Link to="/dashboard/orders" className="text-xs md:text-sm text-pink-600 hover:underline font-medium">View All</Link>
+                        <h2 className="text-lg md:text-xl font-bold">Commandes récentes
+</h2>
+                        <Link to="/dashboard/orders" className="text-xs md:text-sm text-pink-600 hover:underline font-medium">Voir tout</Link>
                     </div>
 
                     {recentOrders.length === 0 ? (
-                        <p className="text-gray-400 text-center py-10 text-sm">No orders yet</p>
+                        <p className="text-gray-400 text-center py-10 text-sm">Aucune commande pour le moment</p>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead>
                                     <tr className="text-left text-gray-400 text-xs md:text-sm border-b">
                                         <th className="pb-3 pr-4">ID</th>
-                                        <th className="pb-3 pr-4">Customer</th>
+                                        <th className="pb-3 pr-4">Cliente</th>
                                         <th className="pb-3 pr-4 hidden md:table-cell">Wilaya</th>
                                         <th className="pb-3 pr-4">Total</th>
-                                        <th className="pb-3">Status</th>
+                                        <th className="pb-3">Statut</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -31,7 +31,7 @@ export default function CategoryList() {
     if (loading) {
         return (
             <div className="min-h-screen bg-pink-50 flex items-center justify-center">
-                <p className="text-gray-500 text-lg">Loading categories...</p>
+                <p className="text-gray-500 text-lg">Chargement des catégories...</p>
             </div>
         );
     }
@@ -44,8 +44,8 @@ export default function CategoryList() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-8 md:mb-12"
                 >
-                    <h1 className="text-3xl md:text-5xl font-serif mb-2">Our Categories</h1>
-                    <p className="text-gray-500 text-sm md:text-base">Choose your style</p>
+                    <h1 className="text-3xl md:text-5xl font-serif mb-2">Nos Catégories</h1>
+                    <p className="text-gray-500 text-sm md:text-base">Choisissez votre style</p>
                 </motion.div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
@@ -79,7 +79,7 @@ export default function CategoryList() {
                                         {cat.name}
                                     </h3>
                                     <span className="text-white/70 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        View products →
+                                        Voir les produits →
                                     </span>
                                 </div>
                             </Link>

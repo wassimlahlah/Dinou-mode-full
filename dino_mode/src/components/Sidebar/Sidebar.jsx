@@ -27,12 +27,12 @@ export default function Sidebar() {
     }, [mobileOpen]);
 
     const items = [
-        { title: "Home", icon: <FaHome />, link: "/" },
-        { title: "Shop", icon: <FaShoppingBag />, link: "/shop" },
-        { title: "Category", icon: <FaTshirt />, link: "/category" },
-        { title: "Offers", icon: <FaFire />, link: "/offers" },
-        { title: "Cart", icon: <FaShoppingCart />, link: "/cart" },
-        { title: "About", icon: <FaInfoCircle />, link: "/about" },
+        { title: "Accueil", icon: <FaHome />, link: "/" },
+        { title: "Boutique", icon: <FaShoppingBag />, link: "/shop" },
+        { title: "Catégories", icon: <FaTshirt />, link: "/category" },
+        { title: "Offres", icon: <FaFire />, link: "/offers" },
+        { title: "Panier", icon: <FaShoppingCart />, link: "/cart" },
+        { title: "À propos", icon: <FaInfoCircle />, link: "/about" },
     ];
 
     return (
@@ -78,7 +78,7 @@ export default function Sidebar() {
                     <div className="flex items-center gap-3 mt-2">
                         <div className="w-8 h-[1px] bg-black/40"></div>
                         <p className="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-medium">
-                            Luxury Fashion
+                            Fashion de luxe
                         </p>
                         <div className="w-8 h-[1px] bg-black/40"></div>
                     </div>

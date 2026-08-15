@@ -587,7 +587,7 @@ export default function DashboardProducts() {
             <div className="flex min-h-screen bg-pink-50">
                 <DashboardSidebar />
                 <main className="flex-1 p-10 flex items-center justify-center">
-                    <p className="text-gray-500 text-lg">Loading...</p>
+                    <p className="text-gray-500 text-lg">Chargement...</p>
                 </main>
             </div>
         );
@@ -605,7 +605,7 @@ export default function DashboardProducts() {
                             onClick={fetchProducts}
                             className="bg-black text-white px-6 py-3 rounded-full hover:bg-pink-500 transition"
                         >
-                            Retry
+                            Réessayer
                         </button>
                     </div>
                 </main>
@@ -618,12 +618,12 @@ export default function DashboardProducts() {
             <DashboardSidebar />
             <main className="flex-1 p-4 md:p-6 lg:p-10 overflow-x-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 md:mb-8">
-                    <h1 className="text-2xl md:text-4xl font-serif">Products</h1>
+                    <h1 className="text-2xl md:text-4xl font-serif">Produits</h1>
                     <button
                         onClick={openAdd}
                         className="bg-black text-white mt-2 cursor-pointer px-5 md:px-6 py-2.5 md:py-3 rounded-full flex items-center gap-2 hover:bg-pink-200 hover:text-black transition text-sm md:text-base w-full sm:w-auto justify-center"
                     >
-                        <FaPlus size={14} /> Add Product
+                        <FaPlus size={14} /> Ajouter un produit
                     </button>
                 </div>
 
@@ -631,7 +631,7 @@ export default function DashboardProducts() {
                     <div className="relative mb-4 md:mb-6">
                         <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input
-                            placeholder="Search products..."
+                            placeholder="Rechercher des produits..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-full border p-3 md:p-4 pl-11 md:pl-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm md:text-base"
@@ -643,11 +643,11 @@ export default function DashboardProducts() {
                         <table className="w-full">
                             <thead>
                                 <tr className="text-left text-gray-400 text-sm border-b">
-                                    <th className="pb-3">Product</th>
-                                    <th className="pb-3">Category</th>
-                                    <th className="pb-3">Colors</th>
+                                    <th className="pb-3">Produit</th>
+                                    <th className="pb-3">Catégorie</th>
+                                    <th className="pb-3">Couleurs</th>
                                     <th className="pb-3">Stock</th>
-                                    <th className="pb-3">Price</th>
+                                    <th className="pb-3">Prix</th>
                                     <th className="pb-3 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -691,7 +691,7 @@ export default function DashboardProducts() {
                                                         <span className="text-xs text-gray-600">{c.color}</span>
                                                         <span className="text-[10px] text-gray-400">({c.sizes?.length || 0}s)</span>
                                                     </div>
-                                                )) || <span className="text-xs text-gray-400">No colors</span>}
+                                                )) || <span className="text-xs text-gray-400">Pas de couleurs</span>}
                                             </div>
                                         </td>
                                         <td className="py-4">
@@ -757,8 +757,8 @@ export default function DashboardProducts() {
                                     ))}
                                 </div>
                                 <div className="flex gap-2 pt-1">
-                                    <button onClick={() => openEdit(product)} className="flex-1 py-2.5 text-blue-500 cursor-pointer bg-blue-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1"><FaEdit size={12} /> Edit</button>
-                                    <button onClick={() => openDeleteModal(product)} className="flex-1 py-2.5 text-red-500 cursor-pointer bg-red-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1"><FaTrash size={12} /> Delete</button>
+                                    <button onClick={() => openEdit(product)} className="flex-1 py-2.5 text-blue-500 cursor-pointer bg-blue-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1"><FaEdit size={12} /> Modifier</button>
+                                    <button onClick={() => openDeleteModal(product)} className="flex-1 py-2.5 text-red-500 cursor-pointer bg-red-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1"><FaTrash size={12} /> Supprimer</button>
                                 </div>
                             </motion.div>
                         ))}
@@ -787,13 +787,13 @@ export default function DashboardProducts() {
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <FaExclamationTriangle className="text-red-500 text-2xl" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Product?</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Supprimer le produit?</h3>
                             <p className="text-gray-500 text-sm mb-6">
-                                Are you sure you want to delete <span className="font-semibold text-gray-700">"{deleteTarget.name}"</span>? This action cannot be undone.
+                                Êtes-vous sûr de vouloir supprimer <span className="font-semibold text-gray-700">"{deleteTarget.name}"</span>? Cette action ne peut être annulée.
                             </p>
                             <div className="flex gap-3">
-                                <button onClick={cancelDelete} className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition cursor-pointer">Cancel</button>
-                                <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition cursor-pointer shadow-lg shadow-red-200">Delete</button>
+                                <button onClick={cancelDelete} className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition cursor-pointer">Annuler </button>
+                                <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition cursor-pointer shadow-lg shadow-red-200">Supprimer</button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -830,10 +830,10 @@ export default function DashboardProducts() {
 
                                 <div className="border rounded-xl p-3 sm:p-4 space-y-3">
                                     <div className="flex justify-between items-center">
-                                        <h3 className="font-semibold text-sm flex items-center gap-2"><FaPalette className="text-pink-400" /> Colors & Sizes</h3>
-                                        <button type="button" onClick={openAddColor} className="text-xs sm:text-sm bg-black cursor-pointer text-white px-3 py-1.5 rounded-full hover:bg-pink-200 hover:text-black transition flex items-center gap-1"><FaPlus size={10} /> Add Color</button>
+                                        <h3 className="font-semibold text-sm flex items-center gap-2"><FaPalette className="text-pink-400" />Couleurs et tailles</h3>
+                                        <button type="button" onClick={openAddColor} className="text-xs sm:text-sm bg-black cursor-pointer text-white px-3 py-1.5 rounded-full hover:bg-pink-200 hover:text-black transition flex items-center gap-1"><FaPlus size={10} /> Ajouter une couleur</button>
                                     </div>
-                                    {form.colors.length === 0 && <p className="text-xs text-gray-400 text-center py-3">No colors added yet</p>}
+                                    {form.colors.length === 0 && <p className="text-xs text-gray-400 text-center py-3">Aucune couleur ajoutée pour l'instant</p>}
                                     <div className="space-y-2">
                                         {form.colors.map((c, i) => (
                                             <div key={i} className="flex items-center gap-3 bg-gray-50 p-2.5 sm:p-3 rounded-xl">
@@ -857,7 +857,7 @@ export default function DashboardProducts() {
                                 {editing && pendingOperations.length > 0 && (
                                     <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
                                         <p className="text-xs text-yellow-700 font-medium">
-                                            {pendingOperations.length} pending change{pendingOperations.length > 1 ? 's' : ''} will be saved on update
+                                            {pendingOperations.length} en attente de changement{pendingOperations.length > 1 ? 's' : ''} sera sauvegardé lors de la mise à jour
                                         </p>
                                     </div>
                                 )}
@@ -872,8 +872,8 @@ export default function DashboardProducts() {
                                         }`}
                                 >
                                     {isSubmitting
-                                        ? (editing ? "Updating..." : "Adding...")
-                                        : (editing ? "Update Product" : "Add Product")
+                                        ? (editing ? "Mise à jour..." : "Ajout...")
+                                        : (editing ? "Mettre à jour le produit" : "Ajouter un produit")
                                     }
                                 </button>
                             </form>
@@ -888,14 +888,14 @@ export default function DashboardProducts() {
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={() => setShowColorModal(false)}>
                         <motion.div initial={{ y: "100%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: "100%", opacity: 0 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl sm:rounded-3xl p-5 sm:p-8 w-full max-w-md max-h-[85vh] overflow-y-auto">
                             <div className="flex justify-between items-center mb-5 sm:mb-6">
-                                <h2 className="text-lg sm:text-xl font-bold">{editingColorIndex !== null ? "Edit Color" : "Add Color"}</h2>
+                                <h2 className="text-lg sm:text-xl font-bold">{editingColorIndex !== null ? "Modifier la couleur" : "Ajouter une couleur"}</h2>
                                 <button onClick={() => setShowColorModal(false)} className="p-2 hover:bg-gray-100 cursor-pointer rounded-full"><FaTimes /></button>
                             </div>
                             <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 sm:hidden" />
 
                             <div className="space-y-3 sm:space-y-4">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 mb-2 block">Select Color</label>
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">Sélectionner une couleur</label>
                                     <div className="flex gap-2 flex-wrap justify-center">
                                         {AVAILABLE_COLORS.map((c) => (
                                             <button
@@ -930,7 +930,7 @@ export default function DashboardProducts() {
                                         className="w-full border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center gap-2 hover:border-pink-400 hover:bg-pink-50 transition cursor-pointer"
                                     >
                                         <FaUpload size={24} className="text-gray-400" />
-                                        <span className="text-sm text-gray-500">Click to upload image</span>
+                                        <span className="text-sm text-gray-500">Cliquez pour télécharger l'image</span>
                                         <span className="text-xs text-gray-400">JPG, PNG, WEBP (max 5MB)</span>
                                     </button>
                                 ) : (
@@ -947,10 +947,10 @@ export default function DashboardProducts() {
 
                                 <div className="border rounded-xl p-3 sm:p-4 space-y-3">
                                     <div className="flex justify-between items-center">
-                                        <h3 className="font-semibold text-sm flex items-center gap-2"><FaBox className="text-pink-400" /> Sizes & Stock</h3>
-                                        <button type="button" onClick={openAddSize} className="text-xs bg-black text-white px-3 py-1.5 cursor-pointer rounded-full hover:bg-pink-200 hover:text-black transition flex items-center gap-1"><FaPlus size={10} /> Add Size</button>
+                                        <h3 className="font-semibold text-sm flex items-center gap-2"><FaBox className="text-pink-400" /> Tailles et stocks</h3>
+                                        <button type="button" onClick={openAddSize} className="text-xs bg-black text-white px-3 py-1.5 cursor-pointer rounded-full hover:bg-pink-200 hover:text-black transition flex items-center gap-1"><FaPlus size={10} /> Ajouter une taille</button>
                                     </div>
-                                    {colorForm.sizes.length === 0 && <p className="text-xs text-gray-400 text-center py-2">No sizes added yet</p>}
+                                    {colorForm.sizes.length === 0 && <p className="text-xs text-gray-400 text-center py-2">Aucune taille ajoutée pour le moment</p>}
                                     <div className="space-y-2">
                                         {colorForm.sizes.map((s, i) => (
                                             <div key={i} className="flex items-center gap-3 bg-gray-50 p-2 rounded-xl">
@@ -965,7 +965,7 @@ export default function DashboardProducts() {
                                     </div>
                                 </div>
 
-                                <button type="button" onClick={saveColor} className="w-full bg-black text-white py-3.5 sm:py-4 cursor-pointer rounded-full hover:bg-pink-200 hover:text-black transition font-medium text-sm sm:text-base">{editingColorIndex !== null ? "Update Color" : "Add Color"}</button>
+                                <button type="button" onClick={saveColor} className="w-full bg-black text-white py-3.5 sm:py-4 cursor-pointer rounded-full hover:bg-pink-200 hover:text-black transition font-medium text-sm sm:text-base">{editingColorIndex !== null ? "Mettre à jour la couleur" : "Ajouter une couleur"}</button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -978,7 +978,7 @@ export default function DashboardProducts() {
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={() => setShowSizeModal(false)}>
                         <motion.div initial={{ y: "100%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: "100%", opacity: 0 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl sm:rounded-3xl p-5 sm:p-8 w-full max-w-sm">
                             <div className="flex justify-between items-center mb-5 sm:mb-6">
-                                <h2 className="text-lg sm:text-xl font-bold">{editingSizeIndex !== null ? "Edit Size" : "Add Size"}</h2>
+                                <h2 className="text-lg sm:text-xl font-bold">{editingSizeIndex !== null ? "Modifier la taille" : "Ajouter une taille"}</h2>
                                 <button onClick={() => setShowSizeModal(false)} className="p-2 cursor-pointer hover:bg-gray-100 rounded-full"><FaTimes /></button>
                             </div>
                             <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 sm:hidden" />
@@ -989,13 +989,13 @@ export default function DashboardProducts() {
                                     onChange={(e) => setSizeForm({ ...sizeForm, label: e.target.value })}
                                     className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base bg-white"
                                 >
-                                    <option value="">Select Size</option>
+                                    <option value="">Sélectionner une taille</option>
                                     {AVAILABLE_SIZES.map((size) => (
                                         <option key={size} value={size}>{size}</option>
                                     ))}
                                 </select>
-                                <input type="number" placeholder="Quantity in stock" value={sizeForm.quantity} onChange={(e) => setSizeForm({ ...sizeForm, quantity: e.target.value })} className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base" min="0" />
-                                <button type="button" onClick={saveSize} className="w-full bg-black text-white cursor-pointer py-3.5 sm:py-4 rounded-full hover:bg-pink-200 hover:text-black transition font-medium text-sm sm:text-base">{editingSizeIndex !== null ? "Update Size" : "Add Size"}</button>
+                                <input type="number" placeholder="Quantité en stock" value={sizeForm.quantity} onChange={(e) => setSizeForm({ ...sizeForm, quantity: e.target.value })} className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base" min="0" />
+                                <button type="button" onClick={saveSize} className="w-full bg-black text-white cursor-pointer py-3.5 sm:py-4 rounded-full hover:bg-pink-200 hover:text-black transition font-medium text-sm sm:text-base">{editingSizeIndex !== null ? "Mettre à jour la taille" : "Ajouter une taille "}</button>
                             </div>
                         </motion.div>
                     </motion.div>

@@ -9,11 +9,11 @@ import { Link } from "react-router-dom";
 export default function Footer() {
 
     const quickLinks = [
-        { name: "Home", path: "/" },
-        { name: "Shop", path: "/shop" },
-        { name: "Categories", path: "/categories" },
-        { name: "Offers", path: "/offers" },
-        { name: "Cart", path: "/cart" },
+        { name: "Accueil", path: "/" },
+        { name: "Boutique", path: "/shop" },
+        { name: "Catégories", path: "/categories" },
+        { name: "Offres", path: "/offers" },
+        { name: "Panier", path: "/cart" },
         { name: "Contact", path: "/contact" }
     ];
 
@@ -41,11 +41,11 @@ export default function Footer() {
                     </Link>
 
                     <p className="mt-5 text-gray-400">
-                        Luxury Women's Fashion
+                        Mode féminine de luxe
                     </p>
 
                     <p className="mt-3 text-gray-400">
-                        Elegant clothes for modern women.
+                        Des vêtements élégants pour les femmes modernes.
                     </p>
 
                 </div>
@@ -129,7 +129,7 @@ export default function Footer() {
 
             {/* ===== COPYRIGHT ===== */}
             <div className="border-t border-gray-700 mt-10 pt-5 text-center text-gray-500 text-sm">
-                © 2026 Dinou Moda. All Rights Reserved.
+                © 2026 Dinou Moda. Tous droits réservés.
             </div>
 
 

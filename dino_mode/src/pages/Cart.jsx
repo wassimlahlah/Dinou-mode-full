@@ -16,7 +16,7 @@ export default function Cart() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-3xl md:text-5xl font-serif font-bold mb-6 md:mb-10"
                 >
-                    My Cart
+                    Mon Panier
                 </motion.h1>
 
                 {cart.length === 0 ? (

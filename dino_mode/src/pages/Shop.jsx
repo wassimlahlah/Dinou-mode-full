@@ -69,7 +69,7 @@ export default function Shop() {
     if (loading) {
         return (
             <div className="p-4 md:p-10 max-w-7xl mx-auto bg-pink-50 min-h-screen flex items-center justify-center">
-                <p className="text-gray-500 text-lg">Loading...</p>
+                <p className="text-gray-500 text-lg">Chargement...</p>
             </div>
         );
     }
@@ -86,7 +86,7 @@ export default function Shop() {
                 {category && (
                     <Link to="/category"
                         className="inline-flex items-center gap-2 text-gray-500 hover:text-black mb-2 transition text-sm">
-                        <FaArrowLeft size={12} /> Back to categories
+                        <FaArrowLeft size={12} /> Retour aux catégories
                     </Link>
                 )}
                 <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif">
@@ -108,7 +108,7 @@ export default function Shop() {
                 <div className="relative flex-1">
                     <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
-                        placeholder="Search products..."
+                        placeholder="Rechercher des produits..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="border p-3 md:p-4 pl-11 md:pl-12 rounded-full w-full md:w-1/2 focus:outline-none focus:ring-2 focus:ring-pink-300"
@@ -118,7 +118,7 @@ export default function Shop() {
 
             {filtered.length === 0 ? (
                 <div className="text-center py-20 text-gray-400 text-lg">
-                    No products found
+                    Aucun produit trouvé
                 </div>
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6 lg:gap-8">

@@ -35,7 +35,7 @@ export default function ProductCard({ product }) {
                     {/* ← Badge الخصم — غير إلا كاين discount حقيقي */}
                     {hasDiscount && (
                         <span className="absolute top-2 md:top-4 left-2 md:left-4 bg-red-500 text-white text-[9px] md:text-[11px] font-bold tracking-wider px-2 md:px-3 py-1 md:py-1.5 rounded-full uppercase">
-                            {discount}% Off
+                            {discount}% off
                         </span>
                     )}
 

@@ -38,7 +38,7 @@ export default function Hero() {
                         transition={{ delay: 0.4, duration: 0.7 }}
                         className="block"
                     >
-                        New
+                        Neuveau
                     </motion.span>
                     <motion.span
                         initial={{ opacity: 0, y: 30 }}
@@ -57,7 +57,7 @@ export default function Hero() {
                     transition={{ delay: 0.8, duration: 0.7 }}
                     className="mt-5 md:mt-6 text-base md:text-2xl font-light text-white/80 max-w-sm mx-auto md:mx-0"
                 >
-                    Elegance and confidence in every piece
+                    Élégance et assurance dans chaque pièce
                 </motion.p>
 
                 {/* الزر */}
@@ -68,7 +68,7 @@ export default function Hero() {
                 >
                     <Link to="/shop">
                         <button className="mt-8 md:mt-10 bg-[#F7D6DF] text-black/80 px-10 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 cursor-pointer">
-                            Shop Now
+                                    Achetez maintenant
                         </button>
                     </Link>
                 </motion.div>
@@ -80,7 +80,7 @@ export default function Hero() {
                 transition={{ repeat: Infinity, duration: 2 }}
                 className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hidden md:flex flex-col items-center gap-1"
             >
-                <span className="text-[9px] uppercase tracking-[0.3em]">Scroll</span>
+                <span className="text-[9px] uppercase tracking-[0.3em]">Rouleau</span>
                 <FaChevronDown size={14} />
             </motion.div>
 

@@ -11,7 +11,7 @@ const statusColors = {
     CANCELED: "bg-red-100 text-red-700",
 };
 
-const statusOptions = ["All", "PENDING", "DELIVERED", "CANCELED"];
+const statusOptions = ["ALL", "PENDING", "DELIVERED", "CANCELED"];
 const statusDisplay = { PENDING: "Pending", DELIVERED: "Delivered", CANCELED: "Canceled" };
 
 export default function DashboardOrders() {
@@ -146,7 +146,7 @@ export default function DashboardOrders() {
         <div className="flex min-h-screen bg-pink-50">
             <DashboardSidebar />
             <main className="flex-1 p-4 md:p-10 overflow-x-hidden">
-                <h1 className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-8">Orders</h1>
+                <h1 className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-8">Commandes</h1>
 
                 {/* Search & Filter */}
                 <div className="flex flex-col md:flex-row gap-3 md:gap-4 mb-6">
@@ -161,12 +161,12 @@ export default function DashboardOrders() {
                     </select>
                 </div>
 
-                {loading && <p className="text-center text-gray-400 py-4">Loading orders...</p>}
+                {loading && <p className="text-center text-gray-400 py-4">Chargement des commandes...</p>}
 
                 {/* ===== MOBILE: Cards ===== */}
                 <div className="md:hidden space-y-3">
                     {filtered.length === 0 ? (
-                        <p className="text-gray-400 text-center py-10">No orders found</p>
+                        <p className="text-gray-400 text-center py-10">Aucune commande trouvée</p>
                     ) : (
                         filtered.map((order) => (
                             <motion.div key={order.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -193,7 +193,7 @@ export default function DashboardOrders() {
 
                                 <div className="flex justify-between text-xs text-gray-400">
                                     <span className="flex items-center gap-1"><FaCalendarAlt size={10} /> {order.date}</span>
-                                    <span className="flex items-center gap-1"><FaBox size={10} /> {order.items} items</span>
+                                    <span className="flex items-center gap-1"><FaBox size={10} /> {order.items} articles</span>
                                 </div>
 
                                 <div className="border-t pt-3 flex justify-between items-center">
@@ -203,7 +203,7 @@ export default function DashboardOrders() {
 
                                 <button onClick={() => setSelectedOrder(order)}
                                     className="w-full py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-pink-500 transition flex items-center justify-center gap-2">
-                                    <FaEye size={12} /> View Details
+                                    <FaEye size={12} /> Voir les détails
                                 </button>
                             </motion.div>
                         ))
@@ -213,17 +213,17 @@ export default function DashboardOrders() {
                 {/* ===== DESKTOP: Table ===== */}
                 <div className="hidden md:block bg-white rounded-3xl shadow-sm p-6 border border-gray-100 overflow-x-auto">
                     {filtered.length === 0 ? (
-                        <p className="text-gray-400 text-center py-10">No orders found</p>
+                        <p className="text-gray-400 text-center py-10">Aucune commande trouvée</p>
                     ) : (
                         <table className="w-full">
                             <thead>
                                 <tr className="text-left text-gray-400 text-sm border-b">
-                                    <th className="pb-3 pr-4">Order ID</th>
-                                    <th className="pb-3 pr-4">Customer</th>
-                                    <th className="pb-3 pr-4">Phone</th>
+                                    <th className="pb-3 pr-4">ID de la commande</th>
+                                    <th className="pb-3 pr-4">Client</th>
+                                    <th className="pb-3 pr-4">Téléphone</th>
                                     <th className="pb-3 pr-4">Wilaya</th>
                                     <th className="pb-3 pr-4">Total</th>
-                                    <th className="pb-3 pr-4">Status</th>
+                                    <th className="pb-3 pr-4">Statut</th>
                                     <th className="pb-3 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -265,7 +265,7 @@ export default function DashboardOrders() {
                             className="bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto">
                             
                             <div className="flex justify-between items-start mb-4">
-                                <h2 className="text-xl md:text-2xl font-bold">Order Details</h2>
+                                <h2 className="text-xl md:text-2xl font-bold">Détails de la commande</h2>
                                 <button onClick={() => deleteCommend(selectedOrder.id)}
                                     className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition">
                                     <FaTrash size={16} />
@@ -281,11 +281,11 @@ export default function DashboardOrders() {
 
                             <div className="space-y-2 md:space-y-3 text-xs md:text-sm mb-6">
                                 <p><span className="text-gray-400">ID:</span> <span className="font-medium">{selectedOrder.displayId}</span></p>
-                                <p><span className="text-gray-400">Customer:</span> <span className="font-medium">{selectedOrder.customer}</span></p>
-                                <p><span className="text-gray-400">Phone:</span> {selectedOrder.phone}</p>
+                                <p><span className="text-gray-400">Client:</span> <span className="font-medium">{selectedOrder.customer}</span></p>
+                                <p><span className="text-gray-400">Téléphone:</span> {selectedOrder.phone}</p>
                                 <p><span className="text-gray-400">Wilaya:</span> {selectedOrder.willya}</p>
                                 <p><span className="text-gray-400">Date:</span> {selectedOrder.date}</p>
-                                <p><span className="text-gray-400">Status:</span> 
+                                <p><span className="text-gray-400">Statut:</span> 
                                     <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${statusColors[selectedOrder.status]}`}>
                                         {statusDisplay[selectedOrder.status]}
                                     </span>
@@ -294,7 +294,7 @@ export default function DashboardOrders() {
 
                             {/* Products List */}
                             <div className="border-t border-gray-200 pt-4 mb-6">
-                                <h3 className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wider">Products</h3>
+                                <h3 className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wider">Produits</h3>
                                 <div className="space-y-3">
                                     {selectedOrder.orders?.map((item, idx) => (
                                         <div key={idx} className="flex gap-3 bg-gray-50 rounded-xl p-3">
@@ -332,7 +332,7 @@ export default function DashboardOrders() {
                             </div>
 
                             <button onClick={() => setSelectedOrder(null)}
-                                className="mt-6 w-full bg-black text-white py-3 rounded-full hover:bg-pink-500 transition">Close</button>
+                                className="mt-6 w-full bg-black text-white py-3 rounded-full hover:bg-pink-500 transition">Fermer</button>
                         </motion.div>
                     </div>
                 )}

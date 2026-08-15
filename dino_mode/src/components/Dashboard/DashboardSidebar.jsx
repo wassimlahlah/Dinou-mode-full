@@ -19,9 +19,9 @@ export default function DashboardSidebar() {
     }, [mobileOpen]);
 
     const items = [
-        { name: "Overview", icon: <FaChartBar />, link: "/dashboard" },
+        { name: "Aperçu", icon: <FaChartBar />, link: "/dashboard" },
         { name: "Orders", icon: <FaShoppingBag />, link: "/dashboard/orders" },
-        { name: "Products", icon: <FaBox />, link: "/dashboard/products" },      
+        { name: "Produits", icon: <FaBox />, link: "/dashboard/products" },      
         { name: "Categories", icon: <FaTags />, link: "/dashboard/categories" },
     ];
 

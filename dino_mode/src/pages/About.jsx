@@ -9,16 +9,20 @@ export default function About() {
                 className="max-w-5xl mx-auto text-center"
             >
                 <h1 className="text-4xl md:text-6xl font-serif mb-6 md:mb-8">
-                    About Dinou Moda
+                    À propos de Dinou Moda
+
                 </h1>
 
                 <p className="text-gray-600 text-base md:text-lg leading-7 md:leading-8 max-w-2xl mx-auto px-2 md:px-0">
-                    Dinou Moda is a luxury women's fashion brand
-                    created to bring elegance, confidence, and modern style
-                    to every woman.
+                    Dinou Moda est une marque de mode féminine de luxe
+
+                    créée pour apporter élégance, confiance et style moderne
+
+                    à chaque femme.
                     <br className="hidden md:block" />
-                    Our collections combine timeless designs,
-                    quality fabrics, and contemporary fashion.
+                    Nos collections allient des designs intemporels,
+
+                    des tissus de qualité et une mode contemporaine.
                 </p>
 
                 <div className="mt-8 md:mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
@@ -30,7 +34,7 @@ export default function About() {
                     >
                         <h2 className="text-xl md:text-2xl font-bold">Elegance</h2>
                         <p className="mt-2 md:mt-3 text-sm md:text-base text-gray-500">
-                            Modern feminine style
+                            Style féminin moderne
                         </p>
                     </motion.div>
 
@@ -42,7 +46,7 @@ export default function About() {
                     >
                         <h2 className="text-xl md:text-2xl font-bold">Quality</h2>
                         <p className="mt-2 md:mt-3 text-sm md:text-base text-gray-500">
-                            Selected materials
+                            Matériaux sélectionnés
                         </p>
                     </motion.div>
 
@@ -54,7 +58,7 @@ export default function About() {
                     >
                         <h2 className="text-xl md:text-2xl font-bold">Luxury</h2>
                         <p className="mt-2 md:mt-3 text-sm md:text-base text-gray-500">
-                            Premium experience
+                            Expérience premium
                         </p>
                     </motion.div>
                 </div>
