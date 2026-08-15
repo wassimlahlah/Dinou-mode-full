@@ -190,9 +190,11 @@ export default function Checkout() {
         return (
             <div className="p-6 md:p-10 max-w-2xl mx-auto text-center">
                 <p className="text-5xl md:text-6xl mb-6">🛒</p>
-                <p className="text-xl md:text-2xl text-gray-400 mb-6">Your cart is empty</p>
+                <p className="text-xl md:text-2xl text-gray-400 mb-6">سلة التسوق الخاصة بك فارغة
+</p>
                 <Link to="/shop" className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-pink-500 transition">
-                    Back to Shop
+                    العودة إلى المتجر
+
                 </Link>
             </div>
         );
@@ -206,11 +208,14 @@ export default function Checkout() {
                     className="w-20 h-20 md:w-24 md:h-24 bg-[#F7D6DF] rounded-full flex items-center justify-center mx-auto mb-6">
                     <FaCheck className="text-pink-500 text-3xl md:text-4xl" />
                 </motion.div>
-                <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">Order Confirmed!</h2>
-                <p className="text-gray-500 mb-2 text-sm md:text-base">Thank you <span className="font-semibold text-gray-800">{formData.fullName}</span>,</p>
-                <p className="text-gray-500 mb-8 text-sm md:text-base">We'll contact you soon at <span className="font-semibold text-gray-800">{formData.phone}</span>.</p>
+                <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">تم تأكيد الطلب!
+</h2>
+                <p className="text-gray-500 mb-2 text-sm md:text-base">شكرًا لك
+ <span className="font-semibold text-gray-800">{formData.fullName}</span>,</p>
+                <p className="text-gray-500 mb-8 text-sm md:text-base">سنقوم بالتواصل معك قريبًا على <span className="font-semibold text-gray-800">{formData.phone}</span>.</p>
                 <Link to="/shop" className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-pink-500 transition">
-                    Continue Shopping
+                    مواصلة التسوق
+
                 </Link>
             </motion.div>
         );
@@ -219,27 +224,27 @@ export default function Checkout() {
     return (
         <div className="p-4 md:p-10 max-w-7xl mx-auto">
             <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-                className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-10">Complete Your Order</motion.h1>
+                className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-10">أكمل طلبك</motion.h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-10">
                 <div className="lg:col-span-3">
                     <motion.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                         onSubmit={handleSubmit} className="bg-white rounded-2xl p-5 md:p-8 shadow-sm border border-gray-100">
-                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6">Shipping Information</h2>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6">معلومات الشحن</h2>
                         <div className="space-y-4 md:space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">الاسم الكامل <span className="text-red-500">*</span></label>
                                 <input type="text" name="fullName" required value={formData.fullName} onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F7D6DF] transition" placeholder="Your full name" />
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F7D6DF] transition" placeholder="اسمك الكامل" />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone <span className="text-red-500">*</span></label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">الهاتف <span className="text-red-500">*</span></label>
                                     <input type="tel" name="phone" required value={formData.phone} onChange={handleChange}
                                         className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F7D6DF] transition" placeholder="05XX XX XX XX" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Wilaya <span className="text-red-500">*</span></label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">الولاية <span className="text-red-500">*</span></label>
                                     <select name="willya" required value={formData.willya} onChange={handleChange}
                                         className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F7D6DF] transition bg-white">
                                         <option value="">Select a wilaya</option>
@@ -254,13 +259,13 @@ export default function Checkout() {
                                     className="border-2 border-dashed border-pink-200 rounded-xl p-4 text-center">
                                     <label className="cursor-pointer block">
                                         <FaUpload className="mx-auto text-pink-400 text-2xl mb-2" />
-                                        <span className="text-sm text-gray-600 font-medium">Upload Receipt (1000 DZD deposit)</span>
+                                        <span className="text-sm text-gray-600 font-medium">تحميل الإيصال(1000 DZD deposit)</span>
                                         <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                                     </label>
                                     {receiptImage && (
                                         <p className="text-xs text-green-600 mt-2">✓ {receiptImage.name}</p>
                                     )}
-                                    <p className="text-xs text-gray-400 mt-1">Required for delivery outside Algiers</p>
+                                    <p className="text-xs text-gray-400 mt-1">  مطلوب للتوصيل خارج الجزائر العاصمة</p>
                                 </motion.div>
                             )}
                         </div>
