@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     FaChartBar, FaBox, FaShoppingBag, FaTags,
-    FaCog, FaSignOutAlt, FaBars, FaTimes
+    FaCog, FaSignOutAlt, FaBars, FaTimes,FaTruck
 } from "react-icons/fa";
 
 export default function DashboardSidebar() {
@@ -23,6 +23,7 @@ export default function DashboardSidebar() {
         { name: "Orders", icon: <FaShoppingBag />, link: "/dashboard/orders" },
         { name: "Produits", icon: <FaBox />, link: "/dashboard/products" },      
         { name: "Categories", icon: <FaTags />, link: "/dashboard/categories" },
+        { name: "Livraison", icon: <FaTruck />, link: "/dashboard/livraison" },
     ];
 
     return (

@@ -62,6 +62,20 @@ export const getLivraisonPrices = async () => {
     const response = await api.get("/livrison_method/0/");
     return response.data.data || [];
 };
+export const createLivraisonPrice = async (data) => {
+    const response = await api.post("/livrison_method/0/", data);
+    return response.data;
+};
+
+export const updateLivraisonPrice = async (id, data) => {
+    const response = await api.put(`/livrison_method/${id}/`, data);
+    return response.data;
+};
+
+export const deleteLivraisonPrice = async (id) => {
+    const response = await api.delete(`/livrison_method/${id}/`);
+    return response.data;
+};
 
 export const login = async (username, password) => {
     const response = await api.post("/signin/", { username, password });

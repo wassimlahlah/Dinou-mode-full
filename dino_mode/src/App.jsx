@@ -15,6 +15,7 @@ import DashboardProducts from "./pages/DashboardProducts";
 import DashboardOrders from "./pages/DashboardOrders";
 import DashboardCategories from "./pages/DashboardCategories";
 import AdminRoute from "./routes/AdminRoute";
+import DashboardLivraison from "./pages/DashboardLivraison";
 
 function App() {
     return (
@@ -46,6 +47,11 @@ function App() {
                 <Route path="/dashboard/categories" element={<AdminRoute>
                     <DashboardCategories />
                 </AdminRoute>} />
+                
+                <Route path="/dashboard/livraison" element={<AdminRoute>
+                    <DashboardLivraison  />
+                </AdminRoute>} />
+
             </Routes>
         </BrowserRouter>
     );
