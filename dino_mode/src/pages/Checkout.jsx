@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaCheck, FaTruck, FaShieldAlt, FaUpload, FaHome, FaStore } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { createOrder } from "../api/api"; // ← استعملنا createOrder من api.js
+import { createOrder } from "../api/axios"; // ← استعملنا createOrder من api.js
 
 const LIVRAISON_PRICES = [
   { wilaya: "Alger", zone: 0, delai: 1, domicile: 590, stopDesk: 450, retour: 0 },
