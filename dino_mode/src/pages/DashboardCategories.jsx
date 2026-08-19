@@ -172,7 +172,7 @@ export default function DashboardCategories() {
     };
 
     return (
-        <div className="flex min-h-screen bg-pink-50">
+        <div className="flex min-h-screen bg-pink-50 mt-2">
             <DashboardSidebar />
             <main className="flex-1 p-4 md:p-6 lg:p-10 overflow-x-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 md:mb-8">

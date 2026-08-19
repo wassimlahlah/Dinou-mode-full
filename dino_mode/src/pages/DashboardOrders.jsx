@@ -143,7 +143,7 @@ export default function DashboardOrders() {
 
     // ... باقي الـ JSX يبقى كما هو (ما تبدلوش)
     return (
-        <div className="flex min-h-screen bg-pink-50">
+        <div className="flex min-h-screen bg-pink-50 mt-2">
             <DashboardSidebar />
             <main className="flex-1 p-4 md:p-10 overflow-x-hidden">
                 <h1 className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-8">Commandes</h1>
