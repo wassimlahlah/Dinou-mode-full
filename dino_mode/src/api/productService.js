@@ -10,8 +10,8 @@ export const adaptProduct = (p) => ({
         image: info.image || "",
         sizes: info.sizesQte?.map((sq) => ({
             id: sq.id,
-            label: sq.size,        // ← "S"
-            number: sq.eqSize,    // ← 36 (من EqSize enum)
+            label: sq.size,
+            number: sq.eqSize,
             quantity: sq.qte,
         })) || [],
     })) || [],
@@ -34,20 +34,26 @@ export const getCategories = async () => {
     return response.data.data || [];
 };
 
+// 🔧 معدل: زدنا baladiya و is_birou باش يتوافق مع موديل Commend
 export const createOrder = async (orderData, receiptImage = null) => {
     const formData = new FormData();
+    
     formData.append(
         "json",
         JSON.stringify({
             fullName: orderData.fullName,
             phone: orderData.phone,
             willya: orderData.willya,
+            baladiya: orderData.baladiya || null,
+            is_birou: orderData.is_birou || false,
             commend_orders: orderData.commend_orders,
         })
     );
+    
     if (receiptImage) {
         formData.append("recipte", receiptImage);
     }
+    
     const response = await api.post("/commends_orders_method/pending/0/", formData);
     return response.data;
 };

@@ -1445,7 +1445,7 @@ def livrison_price_method(request, livrison_price_id):
 
         if request.method == "POST":
 
-            serializer = LivrsionPriceSerializer(
+            serializer = LivrsionPriceSerializerPush(
                 data=request.data
             )
 

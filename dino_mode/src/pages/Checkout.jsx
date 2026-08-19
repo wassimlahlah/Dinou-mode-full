@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaCheck, FaTruck, FaShieldAlt, FaUpload, FaHome, FaStore } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import api from "../api/axios";
+import { createOrder } from "../api/api"; // ← استعملنا createOrder من api.js
 
 const LIVRAISON_PRICES = [
   { wilaya: "Alger", zone: 0, delai: 1, domicile: 590, stopDesk: 450, retour: 0 },
@@ -79,7 +79,7 @@ export default function Checkout() {
         phone: "",
         willya: "",
         baladiya: "",
-        deliveryType: "domicile",
+        deliveryType: false,
     });
     
     const [receiptImage, setReceiptImage] = useState(null);
@@ -180,7 +180,8 @@ export default function Checkout() {
         setLoading(true);
 
         try {
-            const commendOrders = cart.map(item => {
+            // 🔧 بناء commend_orders بشكل موافق للباك اند
+            const commend_orders = cart.map(item => {
                 const psId = parseInt(item.productSizeId, 10);
                 if (isNaN(psId) || psId <= 0) {
                     throw new Error(`Invalid productSizeId for item: ${item.name}`);
@@ -191,55 +192,36 @@ export default function Checkout() {
                 };
             });
 
-            // 🔧 PAYLOAD — نفس الشيء اللي كان يخدم قبل
-            // مازدناش deliveryType ولا livraisonPrice لأن الباك اند مايعرفهمش
-            const jsonPayload = {
+            // 🔧 بناء الـ payload كامل مع baladiya و is_birou
+            const orderPayload = {
                 fullName: formData.fullName.trim(),
                 phone: formData.phone.trim(),
                 willya: formData.willya,
                 baladiya: formData.baladiya.trim() || null,
-                commend_orders: commendOrders
+                is_birou: formData.deliveryType === "stopDesk", // ← true للمكتب، false للمنزل
+                commend_orders: commend_orders
             };
 
-            console.log("📤 Sending payload:", jsonPayload);
+            console.log("📤 Sending payload:", orderPayload);
 
-            // 🔧 دايماً نبعتو FormData (هكا الباكند يتقبلو)
-            const formPayload = new FormData();
-            formPayload.append("json", JSON.stringify(jsonPayload));
-            
-            if (receiptImage) {
-                formPayload.append("recipte", receiptImage);
-            }
+            // 🔧 استعمال createOrder من api.js
+            const res = await createOrder(orderPayload, receiptImage);
 
-            const res = await api.post("/commends_orders_method/pending/0/", formPayload);
+            console.log("📥 Response:", res);
 
-            console.log("📥 Response:", res.data);
-
-            if (res.data.status === "success") {
-                // UPDATE STOCK
-                const updatePromises = cart.map(item => {
-                    const colorId = item.productColorId || 0;
-                    return api.get(`/update_qte/${item.productSizeId}/${colorId}/`);
-                });
-                
-                await Promise.all(updatePromises).catch(err => {
-                    console.warn("Some stock updates failed:", err);
-                });
-
+            if (res.status === "success") {
                 toast.success("Order placed successfully!");
                 setSubmitted(true);
                 clearCart();
             } else {
-                toast.error(res.data.message || "Failed");
+                toast.error(res.message || "Failed to place order");
             }
         } catch (err) {
             console.error("🔥 Full error:", err);
             
-            // 🔥 عرض التفاصيل بالضبط
             if (err.response) {
                 console.error("🔥 Status:", err.response.status);
                 console.error("🔥 Data:", JSON.stringify(err.response.data, null, 2));
-                console.error("🔥 Headers:", err.response.headers);
             }
 
             const backendError = err.response?.data;

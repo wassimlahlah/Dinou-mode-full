@@ -3,7 +3,7 @@ import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
 import { motion } from "framer-motion";
 import { FaSearch, FaEye, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaBox, FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
-import api from "../api/axios";  // ← استعمل axios بدل fetch
+import api from "../api/axios";
 
 const statusColors = {
     DELIVERED: "bg-green-100 text-green-700",
@@ -21,11 +21,9 @@ export default function DashboardOrders() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // 🔥 Fetch orders from backend — بـ axios
     const fetchOrders = async (status) => {
         try {
             const res = await api.get(`/commends_orders_method/${status}/0/`);
-            // axios يرجع data في res.data
             if (res.data.status === "success") {
                 return res.data.data;
             }
@@ -52,17 +50,20 @@ export default function DashboardOrders() {
             allOrders = await fetchOrders(filter);
         }
 
-        // Transform backend data to frontend format
         const transformed = allOrders.map(commend => ({
             id: commend.id,
             displayId: `#CMD-${commend.id}`,
             customer: commend.fullName,
             phone: commend.phone,
             willya: commend.willya,
+            baladiya: commend.baladiya,
             date: new Date(commend.commend_date).toLocaleDateString(),
             status: commend.status,
             image_url: commend.image_url,
-            total: commend.commend_orders.reduce((sum, o) => sum + (parseFloat(o.price) || 0), 0),
+            is_birou: commend.is_birou,
+            total: commend.commend_orders.reduce(
+                (sum, o) => sum + (parseFloat(o.price) * o.quantity), 0
+            ),
             items: commend.commend_orders.reduce((sum, o) => sum + o.quantity, 0),
             orders: commend.commend_orders.map(o => ({
                 id: o.id,
@@ -70,8 +71,8 @@ export default function DashboardOrders() {
                 size: o.productSize?.size,
                 color: o.productSize?.productColor?.color,
                 quantity: o.quantity,
-                price: parseFloat(o.price) || 0,
-                unitPrice: o.productSize?.productColor?.product?.price || 0,
+                unitPrice: parseFloat(o.price) || 0,
+                totalPrice: (parseFloat(o.price) || 0) * o.quantity,
                 image: o.productSize?.productColor?.image || null
             }))
         }));
@@ -84,7 +85,6 @@ export default function DashboardOrders() {
         loadAllOrders();
     }, [filter]);
 
-    // 🔥 Update status — بـ axios
     const updateStatus = async (id, newStatus) => {
         try {
             const res = await api.put(`/update_commend_status_or_delete/${id}/${newStatus}/`);
@@ -100,10 +100,10 @@ export default function DashboardOrders() {
         }
     };
 
-    // 🔥 Delete single order — بـ axios
-    const deleteOrder = async (orderId, commendId) => {
+    // 🔧 status زايد في URL، الباك اند يلقاه بـ order_id فقط
+    const deleteOrder = async (orderId) => {
         try {
-            const res = await api.delete(`/commends_orders_method/pending/${orderId}/`);
+            const res = await api.delete(`/commends_orders_method/DELETE/${orderId}/`);
             if (res.data.status === "success") {
                 toast.success("Order deleted");
                 loadAllOrders();
@@ -117,7 +117,6 @@ export default function DashboardOrders() {
         }
     };
 
-    // 🔥 Delete entire commend — بـ axios
     const deleteCommend = async (commendId) => {
         try {
             const res = await api.delete(`/update_commend_status_or_delete/${commendId}/delete/`);
@@ -141,14 +140,12 @@ export default function DashboardOrders() {
         return matchesSearch && matchesStatus;
     });
 
-    // ... باقي الـ JSX يبقى كما هو (ما تبدلوش)
     return (
         <div className="flex min-h-screen bg-pink-50 mt-2">
             <DashboardSidebar />
             <main className="flex-1 p-4 md:p-10 overflow-x-hidden">
                 <h1 className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-8">Commandes</h1>
 
-                {/* Search & Filter */}
                 <div className="flex flex-col md:flex-row gap-3 md:gap-4 mb-6">
                     <div className="relative flex-1">
                         <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -163,7 +160,7 @@ export default function DashboardOrders() {
 
                 {loading && <p className="text-center text-gray-400 py-4">Chargement des commandes...</p>}
 
-                {/* ===== MOBILE: Cards ===== */}
+                {/* MOBILE */}
                 <div className="md:hidden space-y-3">
                     {filtered.length === 0 ? (
                         <p className="text-gray-400 text-center py-10">Aucune commande trouvée</p>
@@ -189,6 +186,8 @@ export default function DashboardOrders() {
 
                                 <div className="flex items-center gap-1 text-xs text-gray-500">
                                     <FaMapMarkerAlt size={10} /> {order.willya}
+                                    {order.baladiya && ` — ${order.baladiya}`}
+                                    {order.is_birou && <span className="ml-1 text-pink-500">(Stop Desk)</span>}
                                 </div>
 
                                 <div className="flex justify-between text-xs text-gray-400">
@@ -210,7 +209,7 @@ export default function DashboardOrders() {
                     )}
                 </div>
 
-                {/* ===== DESKTOP: Table ===== */}
+                {/* DESKTOP */}
                 <div className="hidden md:block bg-white rounded-3xl shadow-sm p-6 border border-gray-100 overflow-x-auto">
                     {filtered.length === 0 ? (
                         <p className="text-gray-400 text-center py-10">Aucune commande trouvée</p>
@@ -236,7 +235,10 @@ export default function DashboardOrders() {
                                             <p className="font-medium">{order.customer}</p>
                                         </td>
                                         <td className="py-4 pr-4 text-gray-500">{order.phone}</td>
-                                        <td className="py-4 pr-4 text-gray-500">{order.willya}</td>
+                                        <td className="py-4 pr-4 text-gray-500">
+                                            {order.willya}
+                                            {order.baladiya && <span className="block text-xs text-gray-400">{order.baladiya}</span>}
+                                        </td>
                                         <td className="py-4 pr-4 font-bold">{order.total?.toLocaleString()} DA</td>
                                         <td className="py-4 pr-4">
                                             <select value={order.status} onChange={(e) => updateStatus(order.id, e.target.value)}
@@ -257,7 +259,7 @@ export default function DashboardOrders() {
                     )}
                 </div>
 
-                {/* ===== MODAL ===== */}
+                {/* MODAL */}
                 {selectedOrder && (
                     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setSelectedOrder(null)}>
                         <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }}
@@ -272,7 +274,6 @@ export default function DashboardOrders() {
                                 </button>
                             </div>
                             
-                            {/* Receipt Image */}
                             {selectedOrder.image_url && (
                                 <div className="mb-4">
                                     <img src={selectedOrder.image_url} alt="Receipt" className="w-full h-48 object-cover rounded-xl" />
@@ -284,6 +285,12 @@ export default function DashboardOrders() {
                                 <p><span className="text-gray-400">Client:</span> <span className="font-medium">{selectedOrder.customer}</span></p>
                                 <p><span className="text-gray-400">Téléphone:</span> {selectedOrder.phone}</p>
                                 <p><span className="text-gray-400">Wilaya:</span> {selectedOrder.willya}</p>
+                                {selectedOrder.baladiya && (
+                                    <p><span className="text-gray-400">Baladiya:</span> {selectedOrder.baladiya}</p>
+                                )}
+                                <p><span className="text-gray-400">Type:</span> 
+                                    {selectedOrder.is_birou ? " Stop Desk" : " Domicile"}
+                                </p>
                                 <p><span className="text-gray-400">Date:</span> {selectedOrder.date}</p>
                                 <p><span className="text-gray-400">Statut:</span> 
                                     <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${statusColors[selectedOrder.status]}`}>
@@ -292,17 +299,18 @@ export default function DashboardOrders() {
                                 </p>
                             </div>
 
-                            {/* Products List */}
                             <div className="border-t border-gray-200 pt-4 mb-6">
                                 <h3 className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wider">Produits</h3>
                                 <div className="space-y-3">
                                     {selectedOrder.orders?.map((item, idx) => (
                                         <div key={idx} className="flex gap-3 bg-gray-50 rounded-xl p-3">
-                                            <div className="w-14 h-14 rounded-lg bg-gray-200 shrink-0 flex items-center justify-center text-gray-400 text-xs">
-                                
+                                            <div className="w-14 h-14 rounded-lg bg-gray-200 shrink-0 flex items-center justify-center text-gray-400 text-xs overflow-hidden">
+                                                {item.image ? (
                                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
-                                                        
-                                                    </div>
+                                                ) : (
+                                                    "N/A"
+                                                )}
+                                            </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-semibold text-sm text-gray-900 truncate">{item.name}</p>
                                                 <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
@@ -311,10 +319,13 @@ export default function DashboardOrders() {
                                                     {item.color && <span>Color: {item.color}</span>}
                                                 </div>
                                                 <p className="text-sm font-bold text-pink-500 mt-1">
-                                                    {item.price.toLocaleString()} DA
+                                                    {item.totalPrice.toLocaleString()} DA
+                                                    <span className="text-xs font-normal text-gray-400 ml-1">
+                                                        ({item.unitPrice.toLocaleString()} × {item.quantity})
+                                                    </span>
                                                 </p>
                                             </div>
-                                            <button onClick={() => deleteOrder(item.id, selectedOrder.id)}
+                                            <button onClick={() => deleteOrder(item.id)}
                                                 className="text-red-400 hover:text-red-600 p-1">
                                                 <FaTrash size={12} />
                                             </button>
@@ -323,7 +334,6 @@ export default function DashboardOrders() {
                                 </div>
                             </div>
 
-                            {/* Total */}
                             <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
                                 <span className="text-gray-500 text-sm">Total</span>
                                 <span className="text-xl md:text-2xl font-bold text-pink-500">
