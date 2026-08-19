@@ -32,6 +32,7 @@ class Commend(models.Model):
         fullName = models.CharField(max_length=100)
         phone= models.CharField(max_length=10)
         willya = models.CharField(max_length=100)
+        baladiya = models.CharField(max_length=100 , null=True)
         commend_date = models.DateTimeField(auto_now_add=True)
         status = models.CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
         image_url=models.URLField(null=True,blank=True)
@@ -43,7 +44,8 @@ class Orders(models.Model):
     price= models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
     
 class LivrisonPrice(models.Model):
-    willya = models.CharField(max_length=100, unique=True)
+    willya = models.CharField(max_length=100)
+    baladiya= models.CharField(max_length=100,null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null= False, blank=False , default=0.00)
     
 
@@ -76,4 +78,5 @@ class Compte(models.Model):
         auto_now_add=True
     )
 
+    
     

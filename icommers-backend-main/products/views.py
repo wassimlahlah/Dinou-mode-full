@@ -668,7 +668,7 @@ def commend_order_method(
 
            
 
-            if willya != "Alger" and not new_image:
+            """" if willya != "Alger" and not new_image:
 
                 return api_response(
                     "error",
@@ -677,7 +677,7 @@ def commend_order_method(
                     "to confirm your order and ensure delivery. "
                     "Thank you for your understanding.",
                     http_status=400
-                )
+                )"""
 
             
 
@@ -996,7 +996,7 @@ def update_commend_status_or_delete(request, commend_id, new_status):
 @api_view(["PUT","DELETE","POST"])
 @permission_classes([IsAdmin])
 @transaction.atomic
-def update_or_delete_pr_size(request, product_size_id,productColor_id):
+def pr_size_method(request, product_size_id,productColor_id):
     
     try:
         
@@ -1030,13 +1030,16 @@ def update_or_delete_pr_size(request, product_size_id,productColor_id):
           created_sizes = []
       
           for size_data in sizes_data:
-      
+              eq_size = getattr(EqSize, size_data["size"]).value
+
               product_size = ProductSize.objects.create(
                   productColor=product_color,
                   size=size_data["size"],
-                  eqSize=size_data["eqSize"],
+                  eqSize=eq_size,
                   qte=size_data["qte"]
               )
+              
+              
       
               created_sizes.append(product_size)
               update_qte_ws(
@@ -1079,7 +1082,7 @@ def update_or_delete_pr_size(request, product_size_id,productColor_id):
                     http_status=400,
                 )
         
-            product_size = serializer.save()
+            product_size = serializer.save( eqSize = getattr(EqSize, serializer.validated_data["size"]).value)
         
             update_qte_ws(
                 product_size.id,
@@ -1099,6 +1102,12 @@ def update_or_delete_pr_size(request, product_size_id,productColor_id):
             
         if request.method=="DELETE":
             ProductSize.objects.filter(id=product_size_id).delete()
+            return api_response(
+            "success",
+            "Product size deleted successfully.",
+            None,
+            http_status=200,
+        )
 
     except ProductSize.DoesNotExist:
         return api_response(
@@ -1120,7 +1129,7 @@ def update_or_delete_pr_size(request, product_size_id,productColor_id):
 @api_view(["PUT","POST","DELETE"])
 @permission_classes([IsAdmin])
 @transaction.atomic
-def update_color_image(  request, productColorImage_id,  new_color ,product_id):
+def pr_colorImage_method(  request, productColorImage_id,  new_color ,product_id):
 
     try:
 
@@ -1242,74 +1251,118 @@ def update_color_image(  request, productColorImage_id,  new_color ,product_id):
             
             
         if request.method == "POST":
+        
+            json_data = request.data.get("json")
+        
+            if not json_data:
+                return api_response(
+                    "error",
+                    "JSON data is required",
+                    None,
+                    http_status=400
+                )
+        
+            try:
+                data = json.loads(json_data)
+        
+            except json.JSONDecodeError:
+                return api_response(
+                    "error",
+                    "Invalid JSON data",
+                    None,
+                    http_status=400
+                )
+        
+            serializer = ManyColorImageSerializer(data=data)
+        
+            if not serializer.is_valid():
+                return api_response(
+                    "error",
+                    "Validation failed",
+                    serializer.errors,
+                    http_status=400
+                )
+        
+            try:
+                product = Product.objects.get(id=product_id)
+        
+            except Product.DoesNotExist:
+                return api_response(
+                    "error",
+                    "Product not found",
+                    "Product with the given ID does not exist.",
+                    http_status=404
+                )
+        
+            pr_info = serializer.validated_data["info"]
+        
+            for pr in pr_info:
+        
+                color = pr["color"]
+        
+                
+                if ProductColorImage.objects.filter(
+                    product=product,
+                    color=color
+                ).exists():
+        
+                    return api_response(
+                        "error",
+                        "Color already exists",
+                        f"The color '{color}' already exists for this product.",
+                        http_status=400
+                    )
+        
+              
+                image = request.FILES.get(color)
+        
+                if not image:
+                    return api_response(
+                        "error",
+                        "Image is required",
+                        f"Image for color '{color}' is required.",
+                        http_status=400
+                    )
+        
+                
+                image_url = upload_image(
+                    image,
+                    "products"
+                )
+        
+              
+                new_pr = ProductColorImage.objects.create(
+                    product=product,
+                    image=image_url,
+                    color=color
+                )
+        
+               
+                pr_sizeQte = pr["sizesQte"]
+        
+                for size_data in pr_sizeQte:
+        
+                    eq_size = getattr(
+                        EqSize,
+                        size_data["size"]
+                    ).value
+        
+                    ProductSize.objects.create(
+                        productColor=new_pr,
+                        size=size_data["size"],
+                        qte=size_data["qte"],
+                        eqSize=eq_size
+                    )
+        
             
-            
-                        
-                        json_data = request.data.get("json")
-            
-                        if not json_data:
-                            return api_response(
-                                "error",
-                                "JSON data is required",
-                                None,
-                                http_status=400
-                            )
-            
-                        try:
-                            data = json.loads(json_data)
-            
-                        except json.JSONDecodeError:
-                            return api_response(
-                                "error",
-                                "Invalid JSON data",
-                                None,
-                                http_status=400
-                            )
-            
-            
-                      
-                        serializer = ManyColorImageSerializer(data=data)
-                        
-                        if not serializer.is_valid():
-                        
-                                        return api_response(
-                                            "error",
-                                            "Validation failed",
-                                            serializer.errors,
-                                            http_status=400
-                                        )
-                        
-                        pr_info = serializer.validated_data["info"]
-                        product=Product.objects.get(id=product_id)
-                        for pr in pr_info :
-                            image = request.FILES.get(pr["color"])
-                            
-                            if not image :
-                                continue
-                            image_url=upload_image(image,"products")
-                            new_pr=ProductColorImage.objects.create(
-                                product=product,
-                                image=image_url,
-                                color=pr["color"]
-                            )
-                            pr_sizeQte = pr["sizesQte"]
-                            
-                            for size_data in pr_sizeQte:
-                            
-                                ProductSize.objects.create(
-                                productColor=new_pr,
-                                size=size_data["size"],
-                                qte=size_data["qte"],
-                                eqSize=size_data["eqSize"]
-                            )
-                        serializer = ProductSerializer(product)
-#==========chof dir test ta3 loon =======================
-                        return api_response(
-                           "success",
-                           "Product color image added successfully",
-                           serializer.data,
-                           http_status=201
-                       )
+            serializer = ProductSerializer(product)
+        
+            return api_response(
+                "success",
+                "Product color images added successfully",
+                serializer.data,
+                http_status=201
+            )
         
     except ProductColorImage.DoesNotExist:
 
@@ -1488,6 +1541,7 @@ def livrison_price_method(request, livrison_price_id):
             error=str(e),
             http_status=400
         )
+
         
         
 
