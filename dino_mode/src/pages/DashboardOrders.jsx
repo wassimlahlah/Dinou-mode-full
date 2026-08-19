@@ -221,6 +221,7 @@ export default function DashboardOrders() {
                                     <th className="pb-3 pr-4">Client</th>
                                     <th className="pb-3 pr-4">Téléphone</th>
                                     <th className="pb-3 pr-4">Wilaya</th>
+                                    <th className="pb-3 pr-4">Baladiya</th>
                                     <th className="pb-3 pr-4">Total</th>
                                     <th className="pb-3 pr-4">Statut</th>
                                     <th className="pb-3 text-right">Actions</th>
@@ -261,7 +262,7 @@ export default function DashboardOrders() {
 
                 {/* MODAL */}
                 {selectedOrder && (
-                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setSelectedOrder(null)}>
+                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-10" onClick={() => setSelectedOrder(null)}>
                         <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }}
                             onClick={(e) => e.stopPropagation()}
                             className="bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto">
