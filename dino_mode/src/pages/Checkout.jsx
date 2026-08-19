@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../api/axios";
 
-// === أسعار التوصيل من JSON ===
 const LIVRAISON_PRICES = [
   { wilaya: "Alger", zone: 0, delai: 1, domicile: 590, stopDesk: 450, retour: 0 },
   { wilaya: "Blida", zone: 1, delai: 1, domicile: 700, stopDesk: 550, retour: 0 },
@@ -70,8 +69,6 @@ const LIVRAISON_PRICES = [
 
 const WILAYAS = LIVRAISON_PRICES.map(p => p.wilaya).sort();
 
-// 🔧 WebSocket URL — لازم يكون على نفس الدومين تاع الباك اند
-// إذا الباك اند على Render، بدّل هنا
 const WS_URL = "wss://icommers-backend.onrender.com/ws/products/";
 
 export default function Checkout() {
@@ -96,7 +93,7 @@ export default function Checkout() {
     const subtotal = cartTotal;
     const finalTotal = subtotal + livraison;
 
-    // === حساب سعر التوصيل ===
+    // حساب سعر التوصيل
     useEffect(() => {
         if (!formData.willya) {
             setLivraison(0);
@@ -115,37 +112,23 @@ export default function Checkout() {
         }
     }, [formData.willya, formData.deliveryType]);
 
-    // === WebSocket ===
+    // WebSocket
     useEffect(() => {
-        // نتحقق إذا البروتوكول مش HTTPS (localhost)
         const isLocalhost = window.location.hostname === 'localhost';
         const wsUrl = isLocalhost 
-            ? `ws://localhost:8000/ws/products/`  // باك اند محلي
-            : WS_URL;  // باك اند على Render
-        
-        console.log("Connecting to WS:", wsUrl);
+            ? `ws://localhost:8000/ws/products/`
+            : WS_URL;
         
         try {
             ws.current = new WebSocket(wsUrl);
-            
-            ws.current.onopen = () => {
-                console.log("✅ WS Connected");
-                setWsStatus('connected');
-            };
-            
-            ws.current.onclose = (e) => {
-                console.log("❌ WS Closed:", e.code, e.reason);
-                setWsStatus('disconnected');
-            };
-            
+            ws.current.onopen = () => setWsStatus('connected');
+            ws.current.onclose = () => setWsStatus('disconnected');
             ws.current.onerror = (err) => {
-                console.error("🔥 WS Error:", err);
+                console.error("WS Error:", err);
                 setWsStatus('error');
             };
-            
             ws.current.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                console.log("📨 WS Message:", data);
                 if (data.type === 'stock_updated') {
                     console.log('Stock updated:', data.product_size_id, '→', data.new_quantity);
                 }
@@ -153,12 +136,7 @@ export default function Checkout() {
         } catch (err) {
             console.error("Failed to create WS:", err);
         }
-
-        return () => {
-            if (ws.current) {
-                ws.current.close();
-            }
-        };
+        return () => ws.current?.close();
     }, []);
 
     const handleChange = (e) => {
@@ -202,7 +180,6 @@ export default function Checkout() {
         setLoading(true);
 
         try {
-            // ✅ تأكد من productSizeId
             const commendOrders = cart.map(item => {
                 const psId = parseInt(item.productSizeId, 10);
                 if (isNaN(psId) || psId <= 0) {
@@ -214,38 +191,27 @@ export default function Checkout() {
                 };
             });
 
-            // 🔧 الـ payload — نبعتو كـ JSON مباشرة
-            const payload = {
+            // 🔧 PAYLOAD — نفس الشيء اللي كان يخدم قبل
+            // مازدناش deliveryType ولا livraisonPrice لأن الباك اند مايعرفهمش
+            const jsonPayload = {
                 fullName: formData.fullName.trim(),
                 phone: formData.phone.trim(),
                 willya: formData.willya,
                 baladiya: formData.baladiya.trim() || null,
-                deliveryType: formData.deliveryType,
-                livraisonPrice: livraison,
                 commend_orders: commendOrders
             };
 
-            console.log("📤 Sending payload:", payload);
+            console.log("📤 Sending payload:", jsonPayload);
 
-            // 🔧 نبعتو كـ FormData باش الصورة تمشي معاه
+            // 🔧 دايماً نبعتو FormData (هكا الباكند يتقبلو)
             const formPayload = new FormData();
-            formPayload.append("json", JSON.stringify(payload));
+            formPayload.append("json", JSON.stringify(jsonPayload));
             
             if (receiptImage) {
                 formPayload.append("recipte", receiptImage);
             }
 
-            // 🔧 نجربو نبعتو كـ JSON أولاً (بدون صورة)
-            let res;
-            if (!receiptImage) {
-                // بدون صورة — نبعتو JSON مباشرة
-                res = await api.post("/commends_orders_method/pending/0/", payload);
-            } else {
-                // مع صورة — FormData
-                res = await api.post("/commends_orders_method/pending/0/", formPayload, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-            }
+            const res = await api.post("/commends_orders_method/pending/0/", formPayload);
 
             console.log("📥 Response:", res.data);
 
@@ -269,10 +235,10 @@ export default function Checkout() {
         } catch (err) {
             console.error("🔥 Full error:", err);
             
-            // 🔧 عرض التفاصيل الكاملة
+            // 🔥 عرض التفاصيل بالضبط
             if (err.response) {
                 console.error("🔥 Status:", err.response.status);
-                console.error("🔥 Data:", err.response.data);
+                console.error("🔥 Data:", JSON.stringify(err.response.data, null, 2));
                 console.error("🔥 Headers:", err.response.headers);
             }
 
@@ -399,7 +365,6 @@ export default function Checkout() {
                                 />
                             </div>
 
-                            {/* نوع التوصيل */}
                             {formData.willya && (
                                 <motion.div
                                     initial={{ opacity: 0, height: 0 }}
@@ -451,7 +416,6 @@ export default function Checkout() {
                                 </motion.div>
                             )}
 
-                            {/* CCP Upload — اوبشنل */}
                             <AnimatePresence>
                                 {formData.willya && formData.willya !== "Alger" && (
                                     <motion.div
