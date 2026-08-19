@@ -262,10 +262,10 @@ export default function DashboardOrders() {
 
                 {/* MODAL */}
                 {selectedOrder && (
-                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-10" onClick={() => setSelectedOrder(null)}>
+                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-8" onClick={() => setSelectedOrder(null)}>
                         <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                            className="bg-white rounded-2xl md:rounded-3xl p-8 md:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto">
                             
                             <div className="flex justify-between items-start mb-4">
                                 <h2 className="text-xl md:text-2xl font-bold">Détails de la commande</h2>
