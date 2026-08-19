@@ -16,7 +16,6 @@ export function ShopProvider({ children }) {
                 setLoading(true);
                 setError(null);
 
-                // 1️⃣ نعرض البيانات المخزنة مباشرة
                 const cachedProducts = sessionStorage.getItem("products");
                 const cachedCategories = sessionStorage.getItem("categories");
 
@@ -28,26 +27,16 @@ export function ShopProvider({ children }) {
                     setCategories(JSON.parse(cachedCategories));
                 }
 
-                // 2️⃣ نجيب البيانات في نفس الوقت
                 const [prods, cats] = await Promise.all([
                     getProducts(0),
                     getCategories(),
                 ]);
 
-                // 3️⃣ تحديث الـ state
                 setProducts(prods);
                 setCategories(cats);
 
-                // 4️⃣ تخزين البيانات للاستعمال القادم
-                sessionStorage.setItem(
-                    "products",
-                    JSON.stringify(prods)
-                );
-
-                sessionStorage.setItem(
-                    "categories",
-                    JSON.stringify(cats)
-                );
+                sessionStorage.setItem("products", JSON.stringify(prods));
+                sessionStorage.setItem("categories", JSON.stringify(cats));
 
             } catch (err) {
                 console.error("Failed to fetch shop data:", err);
@@ -66,7 +55,8 @@ export function ShopProvider({ children }) {
         size,
         color,
         productSizeId,
-        colorImage
+        colorImage,
+        productColorId    // ← جديد: ضروري باش update_qte يخدم
     ) => {
         setCart((prev) => {
             const existing = prev.find(
@@ -76,10 +66,7 @@ export function ShopProvider({ children }) {
             if (existing) {
                 return prev.map((item) =>
                     item.productSizeId === productSizeId
-                        ? {
-                              ...item,
-                              quantity: item.quantity + quantity,
-                          }
+                        ? { ...item, quantity: item.quantity + quantity }
                         : item
                 );
             }
@@ -95,6 +82,7 @@ export function ShopProvider({ children }) {
                     size,
                     color,
                     productSizeId,
+                    productColorId,   // ← جديد
                     colorImage,
                     image: colorImage || product.image,
                 },
@@ -104,9 +92,7 @@ export function ShopProvider({ children }) {
 
     const removeFromCart = (productSizeId) => {
         setCart((prev) =>
-            prev.filter(
-                (item) => item.productSizeId !== productSizeId
-            )
+            prev.filter((item) => item.productSizeId !== productSizeId)
         );
     };
 
@@ -129,8 +115,7 @@ export function ShopProvider({ children }) {
         0
     );
 
-    const getProductById = (id) =>
-        products.find((p) => p.id === id);
+    const getProductById = (id) => products.find((p) => p.id === id);
 
     return (
         <ShopContext.Provider

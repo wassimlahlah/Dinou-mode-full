@@ -113,35 +113,36 @@ export default function ProductDetails() {
 
     // ← محدث: نبعتو productSizeId للـ Cart
     const handleAddToCart = () => {
-        if (!selectedSize || !selectedColorObj) {
-            alert("Please select a size and color");
-            return;
-        }
+    if (!selectedSize || !selectedColorObj) {
+        alert("Please select a size and color");
+        return;
+    }
 
-        // ← جديد: نلقاو ProductSize ID
-        const selectedSizeObj = selectedColorObj.sizes.find(
-            (s) => s.label === selectedSize
-        );
-        const productSizeId = selectedSizeObj?.id;
+    const selectedSizeObj = selectedColorObj.sizes.find(
+        (s) => s.label === selectedSize
+    );
+    const productSizeId = selectedSizeObj?.id;
 
-        if (!productSizeId) {
-            alert("Error: could not find product size ID");
-            return;
-        }
+    if (!productSizeId) {
+        alert("Error: could not find product size ID");
+        return;
+    }
 
-        addToCart(
-            product,
-            quantity,
-            selectedSize,
-            selectedColorObj.color,
-            productSizeId,           // ← ضروري للـ Backend
-            selectedColorObj.image   // ← image ديال اللون
-        );
+    // ← جديد: productColorId = selectedColorObj.id
+    addToCart(
+        product,
+        quantity,
+        selectedSize,
+        selectedColorObj.color,
+        productSizeId,
+        selectedColorObj.image,
+        selectedColorObj.id   // ← productColorId (من adaptProduct: info.id)
+    );
 
-        setAdded(true);
-        setTimeout(() => setAdded(false), 2000);
-        navigate("/cart");
-    };
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+    navigate("/cart");
+};
 
     const isOnSale = product.oldPrice && product.oldPrice > product.price;
     const discount = isOnSale
