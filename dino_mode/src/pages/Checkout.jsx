@@ -1,31 +1,78 @@
 import { useState, useEffect, useRef } from "react";
 import { useShop } from "../context/ShopContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCheck, FaTruck, FaShieldAlt, FaUpload } from "react-icons/fa";
+import { FaCheck, FaTruck, FaShieldAlt, FaUpload, FaHome, FaStore } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../api/axios";
 
-const WILAYAS = [
-    "01 - Adrar", "02 - Chlef", "03 - Laghouat", "04 - Oum El Bouaghi",
-    "05 - Batna", "06 - Bejaia", "07 - Biskra", "08 - Bechar",
-    "09 - Blida", "10 - Bouira", "11 - Tamanrasset", "12 - Tebessa",
-    "13 - Tlemcen", "14 - Tiaret", "15 - Tizi Ouzou", "16 - Alger",
-    "17 - Djelfa", "18 - Jijel", "19 - Setif", "20 - Saida",
-    "21 - Skikda", "22 - Sidi Bel Abbes", "23 - Annaba", "24 - Guelma",
-    "25 - Constantine", "26 - Medea", "27 - Mostaganem", "28 - M'Sila",
-    "29 - Mascara", "30 - Ouargla", "31 - Oran", "32 - El Bayadh",
-    "33 - Illizi", "34 - Bordj Bou Arreridj", "35 - Boumerdes",
-    "36 - El Tarf", "37 - Tindouf", "38 - Tissemsilt", "39 - El Oued",
-    "40 - Khenchela", "41 - Souk Ahras", "42 - Tipaza", "43 - Mila",
-    "44 - Ain Defla", "45 - Naama", "46 - Ain Temouchent",
-    "47 - Ghardaia", "48 - Relizane", "49 - Timimoun",
-    "50 - Bordj Badji Mokhtar", "51 - Ouled Djellal", "52 - Beni Abbes",
-    "53 - In Salah", "54 - In Guezzam", "55 - Touggourt",
-    "56 - Djanet", "57 - El M'Ghair", "58 - El Meniaa"
+// === أسعار التوصيل من JSON ===
+const LIVRAISON_PRICES = [
+  { wilaya: "Alger", zone: 0, delai: 1, domicile: 590, stopDesk: 450, retour: 0 },
+  { wilaya: "Blida", zone: 1, delai: 1, domicile: 700, stopDesk: 550, retour: 0 },
+  { wilaya: "Boumerdès", zone: 1, delai: 1, domicile: 700, stopDesk: 550, retour: 0 },
+  { wilaya: "Tipaza", zone: 1, delai: 1, domicile: 700, stopDesk: 550, retour: 0 },
+  { wilaya: "Chlef", zone: 2, delai: 1, domicile: 700, stopDesk: 550, retour: 0 },
+  { wilaya: "Oum El Bouaghi", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Batna", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Béjaïa", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Bouira", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Tlemcen", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Tiaret", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Tizi Ouzou", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Jijel", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Sétif", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Saïda", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Skikda", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Sidi Bel Abbès", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Annaba", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Guelma", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Constantine", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Médéa", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Mostaganem", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "M'Sila", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Mascara", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Oran", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Bordj Bou Arreridj", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "El Tarf", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Tissemsilt", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Khenchela", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Souk Ahras", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Mila", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Aïn Defla", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Aïn Témouchent", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Relizane", zone: 2, delai: 1, domicile: 900, stopDesk: 650, retour: 0 },
+  { wilaya: "Laghouat", zone: 3, delai: 1, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "Biskra", zone: 3, delai: 1, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "Tébessa", zone: 3, delai: 1, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "Djelfa", zone: 3, delai: 1, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "Ouargla", zone: 3, delai: 2, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "El Oued", zone: 3, delai: 1, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "Ghardaïa", zone: 3, delai: 2, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "Ouled Djellal", zone: 3, delai: 1, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "Touggourt", zone: 3, delai: 2, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "El M'Ghair", zone: 3, delai: 1, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "El Menia", zone: 3, delai: 2, domicile: 950, stopDesk: 750, retour: 0 },
+  { wilaya: "Adrar", zone: 4, delai: 3, domicile: 1050, stopDesk: 850, retour: 0 },
+  { wilaya: "Béchar", zone: 4, delai: 3, domicile: 1050, stopDesk: 850, retour: 0 },
+  { wilaya: "El Bayadh", zone: 4, delai: 2, domicile: 1050, stopDesk: 850, retour: 0 },
+  { wilaya: "Naâma", zone: 4, delai: 3, domicile: 1050, stopDesk: 850, retour: 0 },
+  { wilaya: "Timimoun", zone: 4, delai: 3, domicile: 1050, stopDesk: 850, retour: 0 },
+  { wilaya: "Bordj Badji Mokhtar", zone: 4, delai: 3, domicile: 1050, stopDesk: 850, retour: 0 },
+  { wilaya: "Béni Abbès", zone: 4, delai: 3, domicile: 1050, stopDesk: 850, retour: 0 },
+  { wilaya: "Tamanrasset", zone: 5, delai: 5, domicile: 1600, stopDesk: 1400, retour: 0 },
+  { wilaya: "Illizi", zone: 5, delai: 6, domicile: 1600, stopDesk: 1400, retour: 0 },
+  { wilaya: "Tindouf", zone: 5, delai: 5, domicile: 1600, stopDesk: 1400, retour: 0 },
+  { wilaya: "In Salah", zone: 5, delai: 5, domicile: 1600, stopDesk: 1400, retour: 0 },
+  { wilaya: "In Guezzam", zone: 5, delai: 5, domicile: 1600, stopDesk: 1400, retour: 0 },
+  { wilaya: "Djanet", zone: 5, delai: 6, domicile: 1600, stopDesk: 1400, retour: 0 }
 ];
 
-const WS_URL = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws/products/`;
+const WILAYAS = LIVRAISON_PRICES.map(p => p.wilaya).sort();
+
+// 🔧 WebSocket URL — لازم يكون على نفس الدومين تاع الباك اند
+// إذا الباك اند على Render، بدّل هنا
+const WS_URL = "wss://icommers-backend.onrender.com/ws/products/";
 
 export default function Checkout() {
     const { cart, cartTotal, clearCart } = useShop();
@@ -35,13 +82,13 @@ export default function Checkout() {
         phone: "",
         willya: "",
         baladiya: "",
+        deliveryType: "domicile",
     });
     
     const [receiptImage, setReceiptImage] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [livraison, setLivraison] = useState(0);
-    const [livraisonLoading, setLivraisonLoading] = useState(false);
     const [wsStatus, setWsStatus] = useState('disconnected');
     
     const ws = useRef(null);
@@ -49,70 +96,78 @@ export default function Checkout() {
     const subtotal = cartTotal;
     const finalTotal = subtotal + livraison;
 
-    // جيب سعر التوصيل
+    // === حساب سعر التوصيل ===
     useEffect(() => {
         if (!formData.willya) {
             setLivraison(0);
             return;
         }
+        const priceData = LIVRAISON_PRICES.find(
+            p => p.wilaya.toLowerCase() === formData.willya.toLowerCase()
+        );
+        if (priceData) {
+            const price = formData.deliveryType === "stopDesk" 
+                ? priceData.stopDesk 
+                : priceData.domicile;
+            setLivraison(price);
+        } else {
+            setLivraison(0);
+        }
+    }, [formData.willya, formData.deliveryType]);
 
-        const fetchLivraison = async () => {
-            setLivraisonLoading(true);
-            try {
-                const res = await api.get("/livrison_method/0/");
-                const prices = res.data.data || [];
-                const willyaName = formData.willya.replace(/^\d+\s*-\s*/, '').trim();
-                
-                let match;
-                if (willyaName.toLowerCase() === "alger" && formData.baladiya) {
-                    match = prices.find(p => 
-                        p.willya?.trim().toLowerCase() === willyaName.toLowerCase() &&
-                        p.baladiya?.trim().toLowerCase() === formData.baladiya.trim().toLowerCase()
-                    );
-                } else {
-                    match = prices.find(p => 
-                        p.willya?.trim().toLowerCase() === willyaName.toLowerCase()
-                    );
-                }
-                
-                setLivraison(match ? parseFloat(match.price) : 0);
-            } catch (err) {
-                console.warn("Livraison fetch failed:", err);
-                setLivraison(0);
-            } finally {
-                setLivraisonLoading(false);
-            }
-        };
-
-        const timer = setTimeout(fetchLivraison, 300);
-        return () => clearTimeout(timer);
-    }, [formData.willya, formData.baladiya]);
-
-    // WebSocket
+    // === WebSocket ===
     useEffect(() => {
-        ws.current = new WebSocket(WS_URL);
-        ws.current.onopen = () => setWsStatus('connected');
-        ws.current.onclose = () => setWsStatus('disconnected');
-        ws.current.onerror = (err) => console.error('WS Error:', err);
-        ws.current.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'stock_updated') {
-                console.log('Stock updated:', data.product_size_id, '→', data.new_quantity);
+        // نتحقق إذا البروتوكول مش HTTPS (localhost)
+        const isLocalhost = window.location.hostname === 'localhost';
+        const wsUrl = isLocalhost 
+            ? `ws://localhost:8000/ws/products/`  // باك اند محلي
+            : WS_URL;  // باك اند على Render
+        
+        console.log("Connecting to WS:", wsUrl);
+        
+        try {
+            ws.current = new WebSocket(wsUrl);
+            
+            ws.current.onopen = () => {
+                console.log("✅ WS Connected");
+                setWsStatus('connected');
+            };
+            
+            ws.current.onclose = (e) => {
+                console.log("❌ WS Closed:", e.code, e.reason);
+                setWsStatus('disconnected');
+            };
+            
+            ws.current.onerror = (err) => {
+                console.error("🔥 WS Error:", err);
+                setWsStatus('error');
+            };
+            
+            ws.current.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log("📨 WS Message:", data);
+                if (data.type === 'stock_updated') {
+                    console.log('Stock updated:', data.product_size_id, '→', data.new_quantity);
+                }
+            };
+        } catch (err) {
+            console.error("Failed to create WS:", err);
+        }
+
+        return () => {
+            if (ws.current) {
+                ws.current.close();
             }
         };
-        return () => ws.current?.close();
     }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        
-        if (name === "willya" && value !== "16 - Alger") {
-            setReceiptImage(null);
-        }
-        if (name === "willya" && value === "16 - Alger") {
-            setFormData(prev => ({ ...prev, baladiya: "" }));
-        }
+    };
+
+    const handleDeliveryTypeChange = (type) => {
+        setFormData(prev => ({ ...prev, deliveryType: type }));
     };
 
     const handleImageChange = (e) => {
@@ -139,14 +194,6 @@ export default function Checkout() {
             toast.error("Please select your wilaya");
             return;
         }
-        if (formData.willya === "16 - Alger" && !formData.baladiya.trim()) {
-            toast.error("Please enter your baladiya for Alger");
-            return;
-        }
-        if (formData.willya !== "16 - Alger" && !receiptImage) {
-            toast.error("Please upload a receipt image");
-            return;
-        }
         if (cart.length === 0) {
             toast.error("Your cart is empty");
             return;
@@ -155,6 +202,7 @@ export default function Checkout() {
         setLoading(true);
 
         try {
+            // ✅ تأكد من productSizeId
             const commendOrders = cart.map(item => {
                 const psId = parseInt(item.productSizeId, 10);
                 if (isNaN(psId) || psId <= 0) {
@@ -166,25 +214,43 @@ export default function Checkout() {
                 };
             });
 
-            const jsonPayload = {
+            // 🔧 الـ payload — نبعتو كـ JSON مباشرة
+            const payload = {
                 fullName: formData.fullName.trim(),
                 phone: formData.phone.trim(),
-                willya: formData.willya.replace(/^\d+\s*-\s*/, '').trim(),
+                willya: formData.willya,
                 baladiya: formData.baladiya.trim() || null,
+                deliveryType: formData.deliveryType,
+                livraisonPrice: livraison,
                 commend_orders: commendOrders
             };
 
+            console.log("📤 Sending payload:", payload);
+
+            // 🔧 نبعتو كـ FormData باش الصورة تمشي معاه
             const formPayload = new FormData();
-            formPayload.append("json", JSON.stringify(jsonPayload));
+            formPayload.append("json", JSON.stringify(payload));
+            
             if (receiptImage) {
                 formPayload.append("recipte", receiptImage);
             }
 
-            // 1. CREATE ORDER
-            const res = await api.post("/commends_orders_method/pending/0/", formPayload);
+            // 🔧 نجربو نبعتو كـ JSON أولاً (بدون صورة)
+            let res;
+            if (!receiptImage) {
+                // بدون صورة — نبعتو JSON مباشرة
+                res = await api.post("/commends_orders_method/pending/0/", payload);
+            } else {
+                // مع صورة — FormData
+                res = await api.post("/commends_orders_method/pending/0/", formPayload, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+            }
+
+            console.log("📥 Response:", res.data);
 
             if (res.data.status === "success") {
-                // 2. UPDATE STOCK
+                // UPDATE STOCK
                 const updatePromises = cart.map(item => {
                     const colorId = item.productColorId || 0;
                     return api.get(`/update_qte/${item.productSizeId}/${colorId}/`);
@@ -201,13 +267,21 @@ export default function Checkout() {
                 toast.error(res.data.message || "Failed");
             }
         } catch (err) {
-            console.error("Error:", err);
+            console.error("🔥 Full error:", err);
+            
+            // 🔧 عرض التفاصيل الكاملة
+            if (err.response) {
+                console.error("🔥 Status:", err.response.status);
+                console.error("🔥 Data:", err.response.data);
+                console.error("🔥 Headers:", err.response.headers);
+            }
+
             const backendError = err.response?.data;
             if (backendError?.error) {
                 toast.error(backendError.error);
             } else if (backendError?.message) {
                 toast.error(backendError.message);
-            } else if (typeof backendError === 'object') {
+            } else if (typeof backendError === 'object' && backendError !== null) {
                 const errors = Object.entries(backendError)
                     .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
                     .join(' | ');
@@ -250,7 +324,7 @@ export default function Checkout() {
                         <span className="font-medium">{subtotal.toLocaleString()} DA</span>
                     </div>
                     <div className="flex justify-between text-sm mb-2">
-                        <span className="text-gray-500">التوصيل:</span>
+                        <span className="text-gray-500">التوصيل ({formData.deliveryType === 'domicile' ? 'المنزل' : 'المكتب'}):</span>
                         <span className="font-medium">{livraison.toLocaleString()} DA</span>
                     </div>
                     <div className="border-t border-gray-200 pt-2 flex justify-between text-base font-bold">
@@ -311,34 +385,75 @@ export default function Checkout() {
                                 </div>
                             </div>
 
-                            {/* حقل البلدية — يظهر فقط للجزائر العاصمة */}
-                            <AnimatePresence>
-                                {formData.willya === "16 - Alger" && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                    >
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            البلدية <span className="text-red-500">*</span>
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            name="baladiya" 
-                                            required
-                                            value={formData.baladiya} 
-                                            onChange={handleChange}
-                                            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F7D6DF] transition" 
-                                            placeholder="مثال: Bab Ezzouar, El Harrach..." 
-                                        />
-                                        <p className="text-xs text-gray-400 mt-1">لازم باش نحسبو سعر التوصيل</p>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    البلدية <span className="text-gray-400 font-normal">(اختياري)</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    name="baladiya" 
+                                    value={formData.baladiya} 
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F7D6DF] transition" 
+                                    placeholder="مثال: Bab Ezzouar, El Harrach..." 
+                                />
+                            </div>
 
-                            {/* Receipt Upload للولايات الأخرى */}
+                            {/* نوع التوصيل */}
+                            {formData.willya && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    className="space-y-3"
+                                >
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        نوع التوصيل <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeliveryTypeChange("domicile")}
+                                            className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition ${
+                                                formData.deliveryType === "domicile"
+                                                    ? "border-pink-500 bg-pink-50 text-pink-600"
+                                                    : "border-gray-200 hover:border-pink-200"
+                                            }`}
+                                        >
+                                            <FaHome className="text-xl" />
+                                            <span className="font-medium text-sm">المنزل</span>
+                                            <span className="text-xs text-gray-400">Domicile</span>
+                                            {formData.willya && (
+                                                <span className="text-xs font-bold text-pink-500">
+                                                    +{LIVRAISON_PRICES.find(p => p.wilaya === formData.willya)?.domicile || 0} DA
+                                                </span>
+                                            )}
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeliveryTypeChange("stopDesk")}
+                                            className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition ${
+                                                formData.deliveryType === "stopDesk"
+                                                    ? "border-pink-500 bg-pink-50 text-pink-600"
+                                                    : "border-gray-200 hover:border-pink-200"
+                                            }`}
+                                        >
+                                            <FaStore className="text-xl" />
+                                            <span className="font-medium text-sm">المكتب</span>
+                                            <span className="text-xs text-gray-400">Stop Desk</span>
+                                            {formData.willya && (
+                                                <span className="text-xs font-bold text-pink-500">
+                                                    +{LIVRAISON_PRICES.find(p => p.wilaya === formData.willya)?.stopDesk || 0} DA
+                                                </span>
+                                            )}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* CCP Upload — اوبشنل */}
                             <AnimatePresence>
-                                {formData.willya && formData.willya !== "16 - Alger" && (
+                                {formData.willya && formData.willya !== "Alger" && (
                                     <motion.div
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
@@ -347,22 +462,21 @@ export default function Checkout() {
                                     >
                                         <div className="mb-4">
                                             <p className="text-sm font-semibold text-gray-700">
-                                                التوصيل خارج الجزائر العاصمة
-                                            </p>
-                                            <p className="text-sm text-pink-600 font-bold mt-1">
-                                                للتأكيد الطلب يجب دفع 1000 دينار مسبقا
+                                                دفع مسبق (اختياري)
                                             </p>
                                             <p className="text-xs text-gray-500 mt-2">
                                                 CCP: <span className="font-bold text-gray-700">00799999004183356066</span>
                                             </p>
                                             <p className="text-xs text-gray-400 mt-1">
-                                                قم بتحويل 1000 DA إلى حساب CCP أعلاه ثم أرفق صورة الإيصال.
+                                                إذا دفعت مسبقًا، أرفق صورة الإيصال. أو ادفع عند الاستلام.
                                             </p>
                                         </div>
 
                                         <label className="cursor-pointer block">
                                             <FaUpload className="mx-auto text-pink-400 text-2xl mb-2" />
-                                            <span className="text-sm text-gray-600 font-medium">تحميل الإيصال</span>
+                                            <span className="text-sm text-gray-600 font-medium">
+                                                {receiptImage ? "تغيير الصورة" : "تحميل الإيصال (اختياري)"}
+                                            </span>
                                             <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                                         </label>
 
@@ -374,9 +488,9 @@ export default function Checkout() {
                             </AnimatePresence>
                         </div>
                         
-                        <button type="submit" disabled={loading || livraisonLoading}
-                            className={`w-full mt-6 md:mt-8 py-3.5 md:py-4 rounded-full font-bold text-base md:text-lg transition ${loading || livraisonLoading ? "bg-gray-300 cursor-not-allowed" : "bg-black text-white hover:bg-pink-500"}`}>
-                            {loading ? "قيد المعالجة..." : livraisonLoading ? "جاري حساب التوصيل..." : "اتمام الطلب"}
+                        <button type="submit" disabled={loading}
+                            className={`w-full mt-6 md:mt-8 py-3.5 md:py-4 rounded-full font-bold text-base md:text-lg transition ${loading ? "bg-gray-300 cursor-not-allowed" : "bg-black text-white hover:bg-pink-500"}`}>
+                            {loading ? "قيد المعالجة..." : "اتمام الطلب"}
                         </button>
                     </motion.form>
                 </div>
@@ -411,9 +525,8 @@ export default function Checkout() {
                             </div>
                             
                             <div className="flex justify-between text-gray-600 text-sm md:text-base">
-                                <span className="flex items-center gap-1">
-                                    Livraison
-                                    {livraisonLoading && <span className="text-xs text-pink-500">(جاري الحساب...)</span>}
+                                <span>
+                                    Livraison ({formData.deliveryType === 'domicile' ? 'Domicile' : 'Stop Desk'})
                                 </span>
                                 <span>{livraison.toLocaleString()} DA</span>
                             </div>
@@ -430,6 +543,9 @@ export default function Checkout() {
 
                         {wsStatus === 'connected' && (
                             <p className="text-xs text-green-500 mt-2 text-center">🟢 متصل بالمخزن المباشر</p>
+                        )}
+                        {wsStatus === 'error' && (
+                            <p className="text-xs text-red-400 mt-2 text-center">🔴 مشكلة في الاتصال</p>
                         )}
 
                         <div className="mt-5 md:mt-6 space-y-2.5 pt-4 border-t border-gray-100">
