@@ -17,7 +17,7 @@ export default function Offers() {
     }
 
     return (
-        <div className="p-4 md:p-10 max-w-7xl mx-auto bg-pink-50">
+        <div className="p-4 md:p-10 max-w-7xl mx-auto bg-pink-50 h-min-screen">
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
