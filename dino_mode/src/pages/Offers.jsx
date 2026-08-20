@@ -10,7 +10,7 @@ export default function Offers() {
 
     if (loading) {
         return (
-            <div className="p-4 md:p-10 max-w-7xl mx-auto bg-pink-50 min-h-screen flex items-center justify-center">
+            <div className="p-4 md:p-10 bg-pink-50 min-h-screen flex items-center justify-center">
                 <p className="text-gray-500 text-lg">Chargement des offres...</p>
             </div>
         );
